@@ -1,0 +1,59 @@
+.nav {
+    background-color: #2b2e2f;
+    display: flex;
+    position: sticky;
+    top: 0;
+}
+
+.nav-page-options {
+    flex-grow: 1;
+}
+
+.nav-option {
+    text-decoration: none;
+    color: #fff;
+    padding: 1rem;
+    display: inline-block;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.nav-button {
+    background-color: #2b2e2f;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+}
+
+.nav-logo-option {
+    display: flex;
+    font-weight: 800;
+    color: #f2d7a7;
+}
+
+.drop-down-panel {
+    position: absolute;
+    background-color: #fff;
+    right: 0;
+    border: 1px solid #ccc;
+    margin-top: 4px;
+    border-radius: 4px;
+    ul {
+        margin: 0;
+        padding: 0.2em 0;
+        li {
+            list-style-type: none;
+        }
+    }
+}
+
+.drop-down-button {
+    color: #2b2e2f;
+    border: none;
+    cursor: pointer;
+    background: none;
+    font-size: 1em;
+    padding: 0.5em 1.5em 0.5em 0.5em;
+    width: 100%;
+    text-align: start;
+}

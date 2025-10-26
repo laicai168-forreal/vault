@@ -1,0 +1,67 @@
+.scroll-item-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+
+    .scroll-item-image-container {
+        background-color: #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        flex-grow: 1;
+
+        .scroll-item-image {
+            height: 100%;
+            width: 100%;
+            object-fit: cover;
+        }
+    }
+
+    .scroll-item-description-container {}
+
+    .item-price {
+        color: red;
+        font-size: 20px;
+        font-weight: 600;
+    }
+
+    .item-info-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .item-info-avatar-container {
+
+            .item-info-avatar {
+                height: 100%;
+                width: 100%;
+                object-fit: cover;
+            }
+        }
+
+        .item-info-location {
+            color: #888;
+            padding-left: 8px;
+        }
+    }
+}
+
+.animated-gradient {
+    animation: flash 1.5s ease infinite;
+}
+
+@keyframes flash {
+    0% {
+        background-color: #eee;
+    }
+
+    70% {
+        background-color: #ddd;
+    }
+
+    100% {
+        background-color: #eee;
+    }
+}
