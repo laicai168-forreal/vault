@@ -1,0 +1,61 @@
+.default-button {
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    background-color: var(--color-primary);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem 0.5rem;
+    position: relative;
+
+    .c-button-content {
+        display: flex;
+        align-items: center;
+    }
+
+    .c-button-loading {
+        visibility: hidden;
+    }
+
+    .c-button-spinner {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    &:hover {
+        background-color: var(--btn-light-hover);
+    }
+
+    &:disabled {
+        background-color: var(--color-steel);
+    }
+
+    &.mono {
+        background-color: #4f4f4f;
+        color: #fff;
+
+        &:hover {
+            background-color: #5f5f5f;
+        }
+    }
+
+    &.icon-only {
+        background-color: transparent;
+        color: #2f2f2f;
+        padding: 0 0.5rem;
+
+        &:hover {
+            color: #4f4f4f;
+        }
+    }
+
+    &.warn {
+        background-color: rgb(243, 65, 65);
+    }
+}

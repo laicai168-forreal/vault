@@ -1,9 +1,14 @@
 
-import { createSlice, createAsyncThunk, PayloadAction, ActionReducerMapBuilder } from '@reduxjs/toolkit';
-import { AuthenticationDetails, CognitoAccessToken, CognitoIdToken, CognitoRefreshToken, CognitoUser, CognitoUserAttribute, CognitoUserPool, CognitoUserSession, ICognitoUserData } from 'amazon-cognito-identity-js';
-import * as AWS from 'aws-sdk/global';
+import { ActionReducerMapBuilder, createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+    CognitoAccessToken,
+    CognitoIdToken,
+    CognitoRefreshToken,
+} from 'amazon-cognito-identity-js';
+import { confirmSignUpService, forgetPassword, refreshSessionService, resendConfirmationService, signInService, signOutService, signUpService, verifyCodeAndSetNewPassword } from './cognitoServices';
+import { send } from 'process';
 
-interface AuthState {
+export interface AuthState {
     isAuthenticated: boolean,
     authData?: {
         idToken: CognitoIdToken,
@@ -15,8 +20,11 @@ interface AuthState {
     res?: any,
     inputPW?: string | null;
     inputUserId?: string | null;
+    newRegisterUserName?: string;
+    needConfirmation?: boolean;
     loading: boolean,
     error: string | null,
+    showLoginModal?: boolean,
 }
 
 export interface SignInData {
@@ -28,31 +36,67 @@ export interface SignOutData {
     userId: string;
 }
 
+export type SignUpData = {
+    email?: string;
+    phone?: string;
+    password: string;
+    confirmPassword: string;
+    displayedName: string;
+};
+
+export type ConfirmEmailData = {
+    username: string;
+    code: string;
+};
+
 const initialState: AuthState = {
     isAuthenticated: false,
     loading: false,
     error: null,
 };
 
+// THUNKS
+export const refreshToken = createAsyncThunk(
+    "auth/refreshToken",
+    async (_, { rejectWithValue }) => {
+        try {
+            const session = await refreshSessionService();
+
+            const formatResult = {
+                idToken: session.getIdToken().getJwtToken(),
+                refreshToken: session.getRefreshToken().getToken(),
+                accessToken: session.getAccessToken().getJwtToken(),
+                userData: session.getIdToken().decodePayload(),
+                isValid: session.isValid(),
+            }
+
+            localStorage.setItem('@malo_auth', JSON.stringify(formatResult));
+            return formatResult;
+        } catch (err: any) {
+            return rejectWithValue(err?.message || "Token refresh failed");
+        }
+    }
+);
+
 export const signIn = createAsyncThunk(
     'auth/signin',
     async ({ userId, password }: SignInData, { rejectWithValue }) => {
         try {
-            const authData = await signInService(userId, password)
-                .then((result: CognitoUserSession) => {
-                    const formatResult = {
-                        idToken: result.getIdToken().getJwtToken(),
-                        refreshToken: result.getRefreshToken().getToken(),
-                        accessToken: result.getAccessToken().getJwtToken(),
-                        userData: result.getIdToken().decodePayload(),
-                        isValid: result.isValid(),
-                    }
-                    localStorage.setItem('@malo_auth', JSON.stringify(formatResult));
-                    return formatResult;
-                });
-            return authData;
+            const res = await signInService(userId, password);
+            const formatResult = {
+                idToken: res.getIdToken().getJwtToken(),
+                refreshToken: res.getRefreshToken().getToken(),
+                accessToken: res.getAccessToken().getJwtToken(),
+                userData: res.getIdToken().decodePayload(),
+                isValid: res.isValid(),
+            }
+            localStorage.setItem('@malo_auth', JSON.stringify(formatResult));
+            return formatResult;
         } catch (error: any) {
-            return rejectWithValue(error.message);
+            return rejectWithValue({
+                message: error.message,
+                name: error.name
+            });
         }
     }
 );
@@ -62,110 +106,121 @@ export const signOut = createAsyncThunk(
     async ({ userId }: SignOutData, { rejectWithValue }) => {
         try {
             const authData = await signOutService(userId);
+            localStorage.setItem('@malo_auth', '{}');
             return authData;
         } catch (error: any) {
             return rejectWithValue(error.message);
         }
     }
 );
-const poolData = {
-    UserPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID || '',
-    ClientId: process.env.REACT_APP_COGNITO_CLIENT_ID || '',
-};
-const userPool = new CognitoUserPool(poolData);
 
-const _inputSignInData = (state: AuthState, action: PayloadAction<SignInData>) => {
+export const signUp = createAsyncThunk(
+    'auth/signup',
+    async (signUpData: SignUpData, { rejectWithValue }) => {
+        try {
+            const res = await signUpService(signUpData);
+            return res;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const confirmEmail = createAsyncThunk(
+    'auth/confirmemail',
+    async (data: ConfirmEmailData, { rejectWithValue }) => {
+        try {
+            return await confirmSignUpService(data);
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const sendConfirmEmail = createAsyncThunk(
+    'auth/sendconfirmemail',
+    async (username: string, { rejectWithValue }) => {
+        try {
+            return await resendConfirmationService(username);
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const sendForgetPasswordEmail = createAsyncThunk(
+    'auth/forgetpasswordemail',
+    async (email: string, { rejectWithValue }) => {
+        try {
+            const res = await forgetPassword(email);
+            return res;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+export const verifyCodeAndSetPassword = createAsyncThunk(
+    'auth/verifycodeandsetpassword',
+    async (
+        verifyCodeAndSetPasswordData: {
+            code: string,
+            newPassword: string,
+            email: string
+        },
+        { rejectWithValue }) => {
+        const { code, newPassword, email } = verifyCodeAndSetPasswordData;
+        try {
+            const res = await verifyCodeAndSetNewPassword(code, newPassword, email);
+            return res;
+        } catch (error: any) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+//ACTIONS
+const inputSignInDataAcion = (state: AuthState, action: PayloadAction<SignInData>) => {
     state.inputUserId = action.payload.userId;
     state.inputPW = action.payload.password;
 }
 
-const _checkLocalAuth = (state: AuthState) => {
+const checkLocalAuthAction = (state: AuthState) => {
     const localAuthData = localStorage.getItem('@malo_auth');
     state.authData = localAuthData ? JSON.parse(localAuthData) : undefined;
     state.isAuthenticated = !!localAuthData;
 }
 
-const signInService = (userId: string, password: string) => {
-    const authenticationData = {
-        Username: userId,
-        Password: password,
-    };
-    const authenticationDetails = new AuthenticationDetails(
-        authenticationData
-    );
-    const userData: ICognitoUserData = {
-        Username: userId,
-        Pool: userPool,
-    };
+const showLoginModalAction = (state: AuthState) => {
+    state.showLoginModal = true;
+}
 
-    const cognitoUser = new CognitoUser(userData);
+const hideLoginModalAction = (state: AuthState) => {
+    state.showLoginModal = false;
+}
 
-
-    return new Promise<CognitoUserSession>((resolve, reject) => {
-        cognitoUser.authenticateUser(authenticationDetails, {
-            onSuccess: function (result) {
-                const accessToken = result.getAccessToken().getJwtToken();
-
-                AWS.config.region = 'us-east-1';
-
-                const configCredentials = new AWS.CognitoIdentityCredentials({
-                    IdentityPoolId: 'us-east-1:8ef005a4-8101-405d-9be9-d5d132124b41',
-                    Logins: {
-                        'cognito-idp.us-east-1.amazonaws.com/us-east-1_Fin5RlUdn': result
-                            .getIdToken()
-                            .getJwtToken(),
-                    },
-                });
-
-                AWS.config.credentials = configCredentials;
-
-                //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
-                configCredentials.refresh(error => {
-                    if (error) {
-                        console.error(error);
-                    } else {
-                        console.log('Successfully logged!');
-                    }
-                });
-                // setToken(accessToken);
-
-                resolve(result);
-            },
-
-            onFailure: function (err) {
-                if (err.name === "UserNotConfirmedException") {
-                    alert(err.message || JSON.stringify(err));
-                    reject(err);
-                }
-            },
-        });
-    })
-};
-
-const signOutService = (userId: string) => {
-    if (userId) {
-        const userData: ICognitoUserData = {
-            Username: userId,
-            Pool: userPool,
-        };
-
-        const cognitoUser = new CognitoUser(userData);
-
-        return new Promise((resolve, reject) => {
-            cognitoUser.globalSignOut({
-                onSuccess: (data) => {
-                    resolve(data);
-                },
-                onFailure: (err) => {
-                    reject(err)
-                }
-            })
+const refreshTokenAction = (builder: ActionReducerMapBuilder<AuthState>) => {
+    builder
+        .addCase(refreshToken.pending, (state) => {
+            state.loading = true;
+            state.error = null;
         })
-    }
+        .addCase(
+            refreshToken.fulfilled,
+            (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.authData = action.payload;
+                state.isAuthenticated = true;
+            }
+        )
+        .addCase(refreshToken.rejected, (state, action) => {
+            state.loading = false;
+            // state.error = action.payload as string;
+            state.isAuthenticated = false;
+        });
+}
 
-};
-
-const signInBuilder = (builder: ActionReducerMapBuilder<AuthState>) => {
+export const signInAction = (builder: ActionReducerMapBuilder<AuthState>) => {
     builder
         .addCase(signIn.pending, (state) => {
             state.loading = true;
@@ -174,16 +229,20 @@ const signInBuilder = (builder: ActionReducerMapBuilder<AuthState>) => {
         .addCase(signIn.fulfilled, (state, action: PayloadAction<any>) => {
             state.loading = false;
             state.res = action.payload;
-            state.authData = undefined;
+            state.authData = action.payload;
             state.isAuthenticated = true;
         })
         .addCase(signIn.rejected, (state, action) => {
+            console.log(action.payload)
+            if ((action.payload as any).name === "UserNotConfirmedException") {
+                state.needConfirmation = true;
+            }
             state.loading = false;
-            state.error = action.payload as string;
+            state.error = (action.payload as any).message;
         });
 }
 
-const signOutBuilder = (builder: ActionReducerMapBuilder<AuthState>) => {
+const signOutAction = (builder: ActionReducerMapBuilder<AuthState>) => {
     builder
         .addCase(signOut.pending, (state) => {
             state.loading = true;
@@ -196,6 +255,106 @@ const signOutBuilder = (builder: ActionReducerMapBuilder<AuthState>) => {
         })
         .addCase(signOut.rejected, (state, action) => {
             state.loading = false;
+            state.isAuthenticated = false;
+            state.authData = undefined;
+            state.error = action.payload as string;
+        });
+}
+
+const signUpAction = (builder: ActionReducerMapBuilder<AuthState>) => {
+    builder
+        .addCase(signUp.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(
+            signUp.fulfilled,
+            (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.authData = action.payload;
+                state.newRegisterUserName = action.payload.user.username;
+            }
+        )
+        .addCase(signUp.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+}
+
+const confirmEmailAction = (builder: ActionReducerMapBuilder<AuthState>) => {
+    builder
+        .addCase(confirmEmail.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(
+            confirmEmail.fulfilled,
+            (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.authData = action.payload;
+                state.isAuthenticated = true;
+            }
+        )
+        .addCase(confirmEmail.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+            state.isAuthenticated = false;
+        });
+}
+
+const sendConfirmationEmailAction = (builder: ActionReducerMapBuilder<AuthState>) => {
+    builder
+        .addCase(sendConfirmEmail.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(
+            sendConfirmEmail.fulfilled,
+            (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.authData = action.payload;
+            }
+        )
+        .addCase(sendConfirmEmail.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+}
+
+const sendForgetPasswordEmailAction = (builder: ActionReducerMapBuilder<AuthState>) => {
+    builder
+        .addCase(sendForgetPasswordEmail.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(
+            sendForgetPasswordEmail.fulfilled,
+            (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.authData = action.payload;
+            }
+        )
+        .addCase(sendForgetPasswordEmail.rejected, (state, action) => {
+            state.loading = false;
+            state.error = action.payload as string;
+        });
+}
+
+const verifyCodeAndSetPasswordAction = (builder: ActionReducerMapBuilder<AuthState>) => {
+    builder
+        .addCase(verifyCodeAndSetPassword.pending, (state) => {
+            state.loading = true;
+            state.error = null;
+        })
+        .addCase(
+            verifyCodeAndSetPassword.fulfilled,
+            (state, action: PayloadAction<any>) => {
+                state.loading = false;
+                state.authData = action.payload;
+            }
+        )
+        .addCase(verifyCodeAndSetPassword.rejected, (state, action) => {
+            state.loading = false;
             state.error = action.payload as string;
         });
 }
@@ -204,12 +363,20 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        inputSignInData: _inputSignInData,
-        checkLocalAuth: _checkLocalAuth,
+        inputSignInData: inputSignInDataAcion,
+        checkLocalAuth: checkLocalAuthAction,
+        showLoginModal: showLoginModalAction,
+        hideLoginModal: hideLoginModalAction,
     },
     extraReducers: (builder) => {
-        signInBuilder(builder);
-        signOutBuilder(builder);
+        signInAction(builder);
+        signOutAction(builder);
+        refreshTokenAction(builder);
+        signUpAction(builder);
+        confirmEmailAction(builder);
+        sendConfirmationEmailAction(builder);
+        sendForgetPasswordEmailAction(builder);
+        verifyCodeAndSetPasswordAction(builder);
     },
 })
 const authReducer = authSlice.reducer;
@@ -217,5 +384,7 @@ const authReducer = authSlice.reducer;
 export default authReducer;
 export const {
     inputSignInData,
-    checkLocalAuth
+    checkLocalAuth,
+    showLoginModal,
+    hideLoginModal,
 } = authSlice.actions;

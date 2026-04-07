@@ -1,0 +1,44 @@
+.detail-card-container {
+    display: flex;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #fff;
+    margin: 0 1rem;
+    padding: 1.5rem;
+    min-height: 500px;
+
+    .detail-car-action-section {
+        display: flex;
+        flex-direction: column;
+
+        .detail-car-delete-button {
+            color: var(--gold);
+        }
+
+        .detail-car-dislike-button {
+            color: var(--gold);
+        }
+
+        .detail-car-add-like-section {
+            display: flex;
+            flex-direction: row;
+        }
+    }
+
+    @media (min-width: 0) {
+        flex-direction: column;
+    }
+
+    @media (min-width: 600px) {
+        .detail-car-image-section {
+            margin-right: 1rem;
+            width: 50%;
+        }
+
+        .detail-car-main-section {
+            width: 50%;
+        }
+
+        flex-direction: row;
+    }
+}

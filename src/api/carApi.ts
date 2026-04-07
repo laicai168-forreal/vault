@@ -1,43 +1,63 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 
 const api = axios.create({
-  baseURL: 'https://zxhk7nz7ee.execute-api.us-east-1.amazonaws.com/prod',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+	baseURL: 'https://q83gsutz70.execute-api.us-east-1.amazonaws.com/prod',
+	headers: {
+		'Content-Type': 'application/json',
+	},
 });
 
 interface ApiConfigData {
-  
+
+}
+
+export type GetCarParams = {
+	limit?: number;
+	offset?: number;
+	bid?: string;
+	keyword?: string;
+	obrd?: string;
 }
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig<ApiConfigData>) => {
-  const { store } = require('../store/store');
-  const userId = store.getState().auth.authData?.userData?.sub;
+	const { store } = require('../store/store');
+	const userId = store.getState().auth.authData?.userData?.sub;
 
-  if (userId) {
-    // list of routes that need user context
-    const userRoutes = ['/cars'];
+	if (userId) {
+		// list of routes that need user context
+		const userRoutes = ['/cars'];
 
-    // check if this request needs user info
-    if (config.url && userRoutes.some(route => config.url?.includes(route))) {
-      if (config.method && ['post', 'put', 'patch'].includes(config.method)) {
-        config.data = { ...(config.data || {}), userId };
-      }
+		// check if this request needs user info
+		if (config.url && userRoutes.some(route => config.url?.includes(route))) {
+			if (config.method && ['post', 'put', 'patch'].includes(config.method)) {
+				config.data = { ...(config.data || {}), userId };
+			}
 
-      if (config.method === 'get') {
-        config.params = { ...(config.params || {}), userId };
-      }
-    }
+			if (config.method === 'get') {
+				config.params = { ...(config.params || {}), userId };
+			}
+		}
 
-    // optional: always add header for debugging/logging
-    // config.headers['X-User-Id'] = userId;
-  }
+		// optional: always add header for debugging/logging
+		// config.headers['X-User-Id'] = userId;
+	}
 
-  return config;
+	return config;
 });
 
-export const fetchCars = async () => {
-  const response = await api.get('/cars');
-  return response.data;
+export const fetchCars = async ({ limit, offset, bid, keyword, obrd }: GetCarParams) => {
+	const params: GetCarParams = {
+		limit: limit || 20,
+		bid,
+	}
+	if (offset) params.offset = offset;
+	if (keyword) params.keyword = keyword;
+	if (obrd !== undefined) params.obrd = obrd;
+	const response = await api.get('/cars', { params });
+	return response.data;
+};
+
+export const fetchCarById = async (cid: string) => {
+	const response = await api.get('/cars', { params: { cid } });
+	return response.data;
 };

@@ -1,0 +1,48 @@
+.c-filter-dropdown-container {
+    position: relative;
+    display: inline-block;
+
+    .c-filter-dropdown-button {
+        font-size: 1rem;
+        border: none;
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+        font-weight: 200;
+        color: var(--color-iron);
+        border-radius: 4px;
+
+        &:hover {
+            cursor: pointer;
+        }
+    }
+
+    .c-filter-dropdown-panel {
+        position: absolute;
+        top: 2.5rem;
+        z-index: 1;
+        background-color: #fff;
+        width: max-content;
+        min-width: 100%;
+        border-radius: 4px;
+        box-shadow: 0 0 3px 3px rgba($color: #000000, $alpha: 0.05);
+
+        ul {
+            padding: 0.5rem;
+            margin: 0;
+
+            li {
+                list-style-type: none;
+                color: var(--color-iron);
+                padding: 0.5rem 1rem;
+
+                &:hover {
+                    cursor: pointer;
+                }
+
+
+            }
+        }
+    }
+}

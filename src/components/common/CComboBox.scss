@@ -1,0 +1,35 @@
+.c-combobox {
+    position: relative;
+    width: 100%;
+}
+
+.c-combobox__input {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.c-combobox__dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 10;
+
+    background: #fff;
+    border: 1px solid #ccc;
+    max-height: 150px;
+    overflow-y: auto;
+
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.c-combobox__option {
+    padding: 8px;
+    cursor: pointer;
+}
+
+.c-combobox__option:hover {
+    background-color: #f5f5f5; }

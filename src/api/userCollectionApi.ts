@@ -1,54 +1,78 @@
-import axios, { InternalAxiosRequestConfig } from 'axios';
-import { AddCollectionEntity } from '../types/UserCollection';
+import axios from 'axios';
+import { CollectionEntry, GetUserCollectionByCarParams, GetUserCollectionParams, UserCollectionParams } from '../types/UserCollection';
+import { getApiContext } from './apiContext';
 
 const api = axios.create({
-  baseURL: 'https://mgc81wtktl.execute-api.us-east-1.amazonaws.com/prod/',
-  headers: {
-    'Content-Type': 'application/json',
-  },
+    baseURL: 'https://29367920u8.execute-api.us-east-1.amazonaws.com/',
+    headers: {
+        'Content-Type': 'application/json',
+    },
 });
 
-interface ApiConfigData {
+api.interceptors.request.use((config) => {
+    const accessToken = getApiContext()?.getAccessToken();
 
-}
-
-api.interceptors.request.use((config: InternalAxiosRequestConfig<ApiConfigData>) => {
-  const { store } = require('../store/store');
-  const userId = store.getState().auth.authData?.userData?.sub;
-
-  if (userId) {
-    // list of routes that need user context
-    const userRoutes = ['/collections'];
-
-    // check if this request needs user info
-    if (config.url && userRoutes.some(route => config.url?.includes(route))) {
-      if (config.method && ['post', 'put', 'patch'].includes(config.method)) {
-        config.data = { ...(config.data || {}), userId };
-      }
-
-      if (config.method && ['get', 'delete']) {
-        config.params = { ...(config.params || {}), userId };
-      }
+    if (accessToken) {
+        config.headers = config.headers ?? {};
+        config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
-    // optional: always add header for debugging/logging
-    // config.headers['X-User-Id'] = userId;
-  }
-
-  return config;
+    return config;
 });
 
-export const addCollection = async (userCollectionEntry: AddCollectionEntity) => {
-  const response = await api.post('/collections', userCollectionEntry);
-  return response.data;
+export const addCollection = async (userCollectionParams: UserCollectionParams) => {
+    const response = await api.post('/collections', userCollectionParams);
+    return response.data;
 };
 
-export const getCollection = async () => {
-  const response = await api.get('/collections');
-  return response.data;
+export const updateCollection = async (userCollectionParams: UserCollectionParams) => {
+    const response = await api.post('/collections', userCollectionParams);
+    return response.data;
 };
 
-export const deleteCollection = async (userCollectionEntry: AddCollectionEntity) => {
-  const response = await api.delete('/collections', { data: userCollectionEntry });
-  return response.data;
+export const getCollection = async ({
+    page,
+    pageSize,
+    order,
+    keyword,
+}: GetUserCollectionParams) => {
+    const params: GetUserCollectionParams = {};
+    params.page = page || 1;
+    if (pageSize) params.pageSize = pageSize;
+    if (order) params.order = order;
+    if (keyword) params.q = keyword;
+
+    const response = await api.get('/collections', { params });
+    return response.data;
+};
+
+export const getCollectionByCarId = async (params: GetUserCollectionByCarParams) => {
+    const response = await api.get('/collections', { params });
+    return response.data;
+};
+
+export const getCollectionMetaData = async (params: CollectionEntry) => {
+    const response = await api.get('/collections', { params });
+    return response.data;
+};
+
+export const deleteCollection = async (carId: string) => {
+    const response = await api.delete('/collections', { params: { carId, deleteAll: true }, });
+    return response.data;
+};
+
+export const deleteCollectionEntry = async (params: CollectionEntry) => {
+    const { carId, itemId } = params;
+    const response = await api.delete('/collections', { params: { carId, itemId }, });
+    return response.data;
+};
+
+export const likeCollection = async (userCollectionEntry: CollectionEntry) => {
+    const response = await api.post('/likes', userCollectionEntry);
+    return response.data;
+};
+
+export const dislikeCollection = async (carId: string) => {
+    const response = await api.delete('/likes', { params: { carId }, });
+    return response.data;
 };

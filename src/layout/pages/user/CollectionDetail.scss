@@ -1,0 +1,109 @@
+.collection-by-car-container {
+    background-color: white;
+    border-radius: 4px;
+    color: black;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+
+    @media (min-width: 0) {
+        width: 80vw;
+        height: 70vh;
+        margin-top: 15vh;
+        margin-left: 10vw;
+    }
+
+    @media (min-width: 600px) {
+        width: 60vw;
+        height: 70vh;
+        margin-top: 15vh;
+        margin-left: 20vw;
+    }
+
+    @media (min-width: 1366px) {
+        width: 46vw;
+        height: 70vh;
+        margin-top: 15vh;
+        margin-left: 27vw;
+    }
+
+
+    .collection-by-car-header {
+        padding-bottom: 1rem;
+
+        .collection-by-car-title {
+            display: flex;
+            flex-direction: row;
+
+            .collection-by-car-image-wrapper {
+                width: 150px;
+                height: 150px;
+            }
+
+            .collection-by-car-image {
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            }
+
+            .collection-by-car-title-text {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    }
+
+    .collection-by-car-content {
+        flex-grow: 1;
+        border: solid 1px #ddd;
+        overflow-y: scroll;
+    }
+
+    .collection-by-car-actions {
+        padding-top: 1rem;
+        display: flex;
+        flex-direction: row;
+        gap: 0.5rem;
+
+        .collection-by-car-pagination {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+
+            .index-input {
+                padding: 0.2rem;
+                border: none;
+                font-size: 1rem;
+
+                &:hover {
+                    background-color: #ddd;
+                    cursor: pointer;
+                }
+
+                &:focus {
+                    cursor: text;
+                }
+
+                .total-index {
+                    padding: 0.2rem;
+                }
+            }
+        }
+        .collection-by-car-buttons {
+            display: flex;
+            flex-grow: 1;
+            flex-direction: row;
+            justify-content: end;
+            align-items: center;
+            gap: 0.4rem;
+            button {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+    }
+}

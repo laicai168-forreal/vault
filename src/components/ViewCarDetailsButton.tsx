@@ -1,10 +1,15 @@
-import React from "react";
+import CActionButton from "./common/CActionButton";
+import { GrView } from "react-icons/gr";
 
-const ViewCarDetailsButton = () => {
+type ViewCarDetailsButtonProps = React.HTMLAttributes<HTMLButtonElement>;
+
+const ViewCarDetailsButton = ({
+    onClick
+}: ViewCarDetailsButtonProps) => {
     return (
-        <button>
-            View
-        </button>
+        <CActionButton title="View details" onClick={onClick}>
+            <GrView />
+        </CActionButton>
     )
 }
 

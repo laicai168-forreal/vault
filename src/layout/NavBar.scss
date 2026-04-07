@@ -1,12 +1,20 @@
 .nav {
-    background-color: #2b2e2f;
+    background-color: var(--color-primary);
     display: flex;
     position: sticky;
     top: 0;
+    z-index: 1;
+    padding: 1rem 1.5rem;
 }
 
 .nav-page-options {
+    display: flex;
+    align-items: center;
     flex-grow: 1;
+
+    a {
+        color: #fff;
+    }
 }
 
 .nav-option {
@@ -19,7 +27,7 @@
 }
 
 .nav-button {
-    background-color: #2b2e2f;
+    background-color: var(--color-primary);
     color: #fff;
     border: none;
     cursor: pointer;
@@ -28,22 +36,43 @@
 .nav-logo-option {
     display: flex;
     font-weight: 800;
-    color: #f2d7a7;
+    color: #fff;
+    height: 3rem;
+
+    a:focus {
+        outline: none;
+    }
+}
+
+.nav-search {
+    display: flex;
+    align-items: center;
+}
+
+.nav-drop-down {
+    display: flex;
 }
 
 .drop-down-panel {
     position: absolute;
     background-color: #fff;
     right: 0;
+    top: 80%;
     border: 1px solid #ccc;
     margin-top: 4px;
     border-radius: 4px;
+
     ul {
         margin: 0;
         padding: 0.2em 0;
+
         li {
             list-style-type: none;
         }
+    }
+
+    &.drop-down-panel-closed {
+        border: none;
     }
 }
 

@@ -1,0 +1,16 @@
+.ccontainer {
+
+    background-color: #f0f0f0;
+
+    @media (min-width: 0) {
+        padding: 0 0.5rem;
+    }
+
+    @media (min-width: 600px) {
+        padding: 0 1rem;
+    }
+
+    @media (min-width: 1000px) {
+        padding: 0 7rem;
+    }
+}

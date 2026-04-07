@@ -1,0 +1,24 @@
+.layout-wrapper {
+	display: flex;
+	flex-direction: column;
+	/* Ensures the total wrapper is at least the full screen height */
+	min-height: 100vh;
+}
+
+.nav {
+	background-color: var(--color-primary);
+	display: flex;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	/* Increased to stay above content */
+	padding: 1rem 1.5rem;
+	/* No height defined means it uses its content height */
+}
+
+.content-container {
+	/* Flex-grow: 1 makes this div fill all remaining vertical space */
+	flex-grow: 1;
+	/* Optional: ensures background colors cover the full height if content is short */
+	background-color: var(--color-background);
+}

@@ -1,0 +1,33 @@
+export interface Car {
+    product_url: string,
+    page_id: string,
+    brand: string,
+    summary: string,
+    last_crawled: string,
+    description_ai?: string,
+    make_ai?: string,
+    model_ai?: string,
+    release_date_ai?: string,
+    details: {
+        Status: string,
+        Scale: string,
+        Marque: string,
+        id: string
+    },
+    image_url: string | string[],
+    images: {
+        original_url: string,
+        s3_url: string,
+    }[],
+    product_line?: string,
+    id: string,
+    image_s3_key: string,
+    image_s3_url: string,
+    title: string,
+    own?: boolean,
+    liked?: boolean,
+    original_id?: string,
+    originalId?: string,
+    loadingAdd?: boolean,
+    loadingLike?: boolean,
+}
