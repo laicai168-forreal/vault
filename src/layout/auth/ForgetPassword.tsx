@@ -122,10 +122,6 @@ const ForgetPassword = () => {
                 
                 <CLink href='/login'>Login</CLink>
             </form>
-            <div>
-                <h3>Debug</h3>
-                <div>{JSON.stringify(forgetPasswordData)}</div>
-            </div>
         </div>
     )
 }

@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { apiConfig } from './config';
 
 const api = axios.create({
-    baseURL: 'https://mbgqdcalh6.execute-api.us-east-1.amazonaws.com/prod',
+    baseURL: apiConfig.crawlerApiBaseUrl,
     headers: {
         'Content-Type': 'application/json',
     },

@@ -7,7 +7,6 @@ import {
     ICognitoUserData,
     AuthenticationDetails,
 } from "amazon-cognito-identity-js";
-import * as AWS from 'aws-sdk/global';
 import { ConfirmEmailData, SignUpData } from "./authSlice";
 
 const poolData = {
@@ -40,29 +39,6 @@ export const signInService = (userId: string, password: string) => {
     return new Promise<CognitoUserSession>((resolve, reject) => {
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: function (result) {
-
-                AWS.config.region = 'us-east-1';
-
-                const configCredentials = new AWS.CognitoIdentityCredentials({
-                    IdentityPoolId: 'us-east-1:8ef005a4-8101-405d-9be9-d5d132124b41',
-                    Logins: {
-                        'cognito-idp.us-east-1.amazonaws.com/us-east-1_Fin5RlUdn': result
-                            .getIdToken()
-                            .getJwtToken(),
-                    },
-                });
-
-                AWS.config.credentials = configCredentials;
-
-                //refreshes credentials using AWS.CognitoIdentity.getCredentialsForIdentity()
-                configCredentials.refresh(error => {
-                    if (error) {
-                        console.error(error);
-                    } else {
-                        console.log('Successfully logged!');
-                    }
-                });
-
                 resolve(result);
             },
 

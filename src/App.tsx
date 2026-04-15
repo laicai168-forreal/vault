@@ -5,17 +5,31 @@ import { Provider } from 'react-redux';
 import { store } from './store/store';
 import { useEffect, useState } from 'react';
 import useAppDispatch from './hooks/useAppDispatch';
-import { checkLocalAuth, refreshToken } from './store/auth/authSlice';
+import { refreshToken } from './store/auth/authSlice';
+import { bootstrapCurrentUser, clearUserState } from './store/user/userSlice';
 
 const AppContent = () => {
   const dispatch = useAppDispatch();
   const [isInitialized, setIsInitialized] = useState(false);
 
   useEffect(() => {
-    dispatch(refreshToken()).then(() => setIsInitialized(true));
+    dispatch(refreshToken()).then(async (action: any) => {
+      if (refreshToken.fulfilled.match(action)) {
+        await dispatch(bootstrapCurrentUser(action.payload.idToken));
+      } else {
+        dispatch(clearUserState());
+      }
+      setIsInitialized(true);
+    });
 
     const interval = setInterval(() => {
-      dispatch(refreshToken());
+      dispatch(refreshToken()).then((action: any) => {
+        if (refreshToken.fulfilled.match(action)) {
+          dispatch(bootstrapCurrentUser(action.payload.idToken));
+        } else {
+          dispatch(clearUserState());
+        }
+      });
     }, 45 * 60 * 1000);
 
     return () => clearInterval(interval);

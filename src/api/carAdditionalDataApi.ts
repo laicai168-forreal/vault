@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { apiConfig } from './config';
 
 const api = axios.create({
-    baseURL: 'https://e1pmpa39l8.execute-api.us-east-1.amazonaws.com/prod',
+    baseURL: apiConfig.additionalDataApiBaseUrl,
     headers: {
         'Content-Type': 'application/json',
     },
@@ -18,4 +19,3 @@ export const runAdditionalDataHelper = async (requestData: AdditionalDataHelperP
     const response = await api.post('/add', requestData);
     return response.data;
 };
-

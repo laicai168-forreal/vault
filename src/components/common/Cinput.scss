@@ -5,19 +5,36 @@
 .form-label {
     font-size: 1rem;
     display: block;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
+    font-weight: 600;
+    color: #161616;
 }
 
 .form-input {
-    border-radius: 4px;
-    border: 1px solid #888;
+    border-radius: 0;
+    border: 1px solid #bfbfbf;
     font-size: 1rem;
-    width: 50%;
-    transition: border-color 0.3s ease;
+    width: 100%;
+    padding: 12px 10px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+    background: white;
 
     &:focus {
-        border-color: #eac69a;
+        border-color: #1d1d1d;
         outline: none;
-        box-shadow: 0 0 0 0.2rem #f2d7a7;
+        box-shadow: 0 0 0 1px #1d1d1d;
     }
+
+    &:disabled {
+        background: #f6f6f6;
+        color: #666;
+        cursor: not-allowed;
+    }
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 140px;
+    line-height: 1.5;
 }

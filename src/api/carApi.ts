@@ -1,7 +1,8 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
+import { apiConfig } from './config';
 
 const api = axios.create({
-	baseURL: 'https://q83gsutz70.execute-api.us-east-1.amazonaws.com/prod',
+	baseURL: apiConfig.carApiBaseUrl,
 	headers: {
 		'Content-Type': 'application/json',
 	},

@@ -3,6 +3,7 @@ import carReducer from './cars/carsSlice';
 import authReducer from './auth/authSlice';
 import userCollectionReducer from './userCollection/userCollectionSlice';
 import filterReducer from './filter/filterSlice';
+import userReducer from './user/userSlice';
 import { initApi } from '../api/apiContext';
 
 
@@ -12,11 +13,13 @@ export const store = configureStore({
     auth: authReducer,
     filter: filterReducer, // TODO: deprecated
     userCollection: userCollectionReducer,
+    user: userReducer,
   }
 });
 
 initApi({
-  getAccessToken: () => store.getState().auth.authData?.accessToken,
+  getAccessToken: () => store.getState().auth.authData?.accessToken as unknown as string | undefined,
+  getIdToken: () => store.getState().auth.authData?.idToken as unknown as string | undefined,
 });
 
 export type RootState = ReturnType<typeof store.getState>;

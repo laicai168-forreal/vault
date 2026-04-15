@@ -1,6 +1,6 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useEffect, useReducer } from 'react';
 import { useSelector } from 'react-redux';
-import { createSearchParams, useNavigate } from 'react-router';
+import { createSearchParams, useNavigate, useSearchParams } from 'react-router';
 import CButton from '../../components/common/CButton';
 import CInfoBlock from '../../components/common/CInfoBlock';
 import CInput from '../../components/common/CInput';
@@ -9,6 +9,7 @@ import { RootState } from '../../store/store';
 import '../../styles/Login.scss';
 import CLink from '../../components/common/CLink';
 import { sendConfirmEmail, signIn } from '../../store/auth/authSlice';
+import { bootstrapCurrentUser } from '../../store/user/userSlice';
 
 interface formData {
 	name?: string;
@@ -26,33 +27,44 @@ export default function Login() {
 
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
-	const { error, needConfirmation } = useSelector((state: RootState) => state.auth);
+	const [searchParams] = useSearchParams();
+	const { error, needConfirmation, loading } = useSelector((state: RootState) => state.auth);
+	const { error: profileError } = useSelector((state: RootState) => state.user);
+
+	useEffect(() => {
+		const username = searchParams.get('username');
+
+		if (username) {
+			updateSignInData({ userId: username });
+		}
+	}, [searchParams]);
 
 	const handleSubmit = useCallback((e: React.FormEvent) => {
 		e.preventDefault();
 		dispatch(signIn(signInData))
 			.unwrap()
-			.then(() => {
-				navigate('/brands');
+			.then(async (authData) => {
+				await dispatch(bootstrapCurrentUser(authData.idToken)).unwrap();
+				navigate('/cars');
 			})
 			.catch((error) => {
 				console.log(error)
 
 			});
-	}, [signInData]);
+	}, [dispatch, navigate, signInData]);
 
 	const handleConfirmEmail = () => {
 		if (signInData.userId) {
 			dispatch(sendConfirmEmail(signInData.userId))
 				.unwrap()
-				.then(() => {
-					navigate({
-						pathname: "/confirm_registration",
-						search: createSearchParams({
-							confirm_email: signInData.userId,
-						}).toString(),
-					});
-				})
+						.then(() => {
+							navigate({
+								pathname: "/confirm_registration",
+								search: createSearchParams({
+									username: signInData.userId,
+								}).toString(),
+							});
+						})
 				.catch((error) => {
 					console.log(error)
 				})
@@ -62,8 +74,14 @@ export default function Login() {
 	return (
 		<div className="container">
 			<h2 className="main-title">{title}</h2>
+			<CInfoBlock type='success' show={searchParams.get('confirmed') === '1'}>
+				Registration confirmed. Sign in to finish creating your profile.
+			</CInfoBlock>
 			<CInfoBlock type='error' show={!!error}>
 				{error}
+			</CInfoBlock>
+			<CInfoBlock type='error' show={!!profileError && !error}>
+				{profileError}
 			</CInfoBlock>
 			<form onSubmit={handleSubmit} noValidate>
 				<CInput
@@ -87,15 +105,11 @@ export default function Login() {
 					fieldKey='password'
 					onChange={updateSignInData}
 				/>
-				<CButton type='submit'>Sign In</CButton>
+				<CButton type='submit' loading={loading}>Sign In</CButton>
 
 				<CLink href='/register' >Create an account</CLink>
 				<CLink href='/forget_password' >Forget Password</CLink>
 			</form>
-			<div>
-				<h3>Debug</h3>
-				<div>{JSON.stringify(signInData)}</div>
-			</div>
 		</div>
 	);
 }

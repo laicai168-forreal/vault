@@ -19,8 +19,44 @@ export default function CImage({
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setImgSrc(src);
+        const nextSrc = src || defaultImage || '';
+        setImgSrc(nextSrc);
+
+        if (!nextSrc) {
+            setLoading(false);
+            return;
+        }
+
         setLoading(true);
+
+        const preloadImage = new Image();
+        preloadImage.src = nextSrc;
+
+        const handleLoad = () => setLoading(false);
+        const handleError = () => {
+            if (defaultImage && nextSrc !== defaultImage) {
+                setImgSrc(defaultImage);
+                const fallbackImage = new Image();
+                fallbackImage.src = defaultImage;
+                fallbackImage.onload = () => setLoading(false);
+                fallbackImage.onerror = () => setLoading(false);
+                return;
+            }
+
+            setLoading(false);
+        };
+
+        preloadImage.onload = handleLoad;
+        preloadImage.onerror = handleError;
+
+        if (preloadImage.complete) {
+            setLoading(false);
+        }
+
+        return () => {
+            preloadImage.onload = null;
+            preloadImage.onerror = null;
+        };
     }, [src]);
 
     return (
@@ -41,4 +77,3 @@ export default function CImage({
         </div>
     );
 }
-

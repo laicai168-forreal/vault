@@ -137,10 +137,6 @@ const CreateAccount = () => {
                 <CButton type='submit'>Submit</CButton>
                 <CLink href='/login'>Login</CLink>
             </form>
-            <div>
-                <h3>Debug</h3>
-                <div>{JSON.stringify(signUpData)}</div>
-            </div>
         </div>
     )
 }

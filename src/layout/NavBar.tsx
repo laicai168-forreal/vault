@@ -1,17 +1,19 @@
 import './NavBar.scss';
 
 import { useState } from 'react';
-import { FaChevronDown, FaUser } from 'react-icons/fa';
+import { FaChevronDown } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useMatch, createSearchParams, useSearchParams } from 'react-router-dom';
 
 import logo from '../assets/images/logo.png';
+import defaultAvatar from '../assets/images/default-avatar.jpg';
 import CImage from '../components/common/CImage';
 import CSearchInput from '../components/CSearchInput';
 import useClickOutside from '../hooks/useClickOutSide';
 import { updateFilter } from '../store/filter/filterSlice';
 import { AppDispatch, RootState } from '../store/store';
 import { signOut } from '../store/auth/authSlice';
+import { clearUserState } from '../store/user/userSlice';
 
 export default function NavBar() {
 	const navigate = useNavigate();
@@ -19,6 +21,7 @@ export default function NavBar() {
 	const dispatch = useDispatch<AppDispatch>();
 
 	const { isAuthenticated, authData } = useSelector((state: RootState) => state.auth);
+	const { currentUser } = useSelector((state: RootState) => state.user);
 	const { filterData: { keyword } } = useSelector((state: RootState) => state.filter);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [isDropDownOpened, setIsDropDownOpened] = useState(false);
@@ -46,6 +49,7 @@ export default function NavBar() {
 		dispatch(signOut({ userId: authData?.userData['cognito:username'] }))
 			.then(() => {
 				localStorage.removeItem("@malo_auth");
+				dispatch(clearUserState());
 				navigate({
 					pathname: "/login",
 				});
@@ -76,7 +80,14 @@ export default function NavBar() {
 			</div>
 			<div className="nav-drop-down" ref={dropDownPanelRef}>
 				<button className="nav-option nav-button" onClick={() => setIsDropDownOpened(!isDropDownOpened)}>
-					<FaUser /><FaChevronDown size={10} />
+					<span className="nav-avatar-frame">
+						<img
+							className="nav-avatar-image"
+							src={currentUser?.profileImageUrl || defaultAvatar}
+							alt={currentUser?.username ? `${currentUser.username} profile` : 'Profile'}
+						/>
+					</span>
+					<FaChevronDown size={10} />
 				</button>
 				<div className={`drop-down-panel${isDropDownOpened ? '' : ' drop-down-panel-closed'}`}>
 					{
@@ -111,12 +122,22 @@ export default function NavBar() {
 									}
 
 								</li>
-								<li>
-									{
-										isAuthenticated &&
-										<button
-											className="drop-down-button"
-											onClick={() => handleDropDownButtonClick(() => handleLogout())}>
+									<li>
+										{
+											isAuthenticated &&
+											<button
+												className="drop-down-button"
+												onClick={() => handleDropDownButtonClick(() => navigate('/account'))}>
+												My Profile
+											</button>
+										}
+									</li>
+									<li>
+										{
+											isAuthenticated &&
+											<button
+												className="drop-down-button"
+												onClick={() => handleDropDownButtonClick(() => handleLogout())}>
 											Log out
 										</button>
 									}

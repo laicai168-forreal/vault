@@ -1,7 +1,6 @@
-import { CognitoAccessToken } from "amazon-cognito-identity-js";
-
 type ApiContext = {
-    getAccessToken: () => CognitoAccessToken | undefined;
+    getAccessToken: () => string | undefined;
+    getIdToken: () => string | undefined;
 };
 
 let context: ApiContext;

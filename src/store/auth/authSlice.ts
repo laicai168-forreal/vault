@@ -6,7 +6,6 @@ import {
     CognitoRefreshToken,
 } from 'amazon-cognito-identity-js';
 import { confirmSignUpService, forgetPassword, refreshSessionService, resendConfirmationService, signInService, signOutService, signUpService, verifyCodeAndSetNewPassword } from './cognitoServices';
-import { send } from 'process';
 
 export interface AuthState {
     isAuthenticated: boolean,
@@ -225,12 +224,14 @@ export const signInAction = (builder: ActionReducerMapBuilder<AuthState>) => {
         .addCase(signIn.pending, (state) => {
             state.loading = true;
             state.error = null;
+            state.needConfirmation = false;
         })
         .addCase(signIn.fulfilled, (state, action: PayloadAction<any>) => {
             state.loading = false;
             state.res = action.payload;
             state.authData = action.payload;
             state.isAuthenticated = true;
+            state.needConfirmation = false;
         })
         .addCase(signIn.rejected, (state, action) => {
             console.log(action.payload)
@@ -289,10 +290,10 @@ const confirmEmailAction = (builder: ActionReducerMapBuilder<AuthState>) => {
         })
         .addCase(
             confirmEmail.fulfilled,
-            (state, action: PayloadAction<any>) => {
+            (state) => {
                 state.loading = false;
-                state.authData = action.payload;
-                state.isAuthenticated = true;
+                state.needConfirmation = false;
+                state.isAuthenticated = false;
             }
         )
         .addCase(confirmEmail.rejected, (state, action) => {

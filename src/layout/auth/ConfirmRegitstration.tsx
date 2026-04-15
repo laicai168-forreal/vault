@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useReducer } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 import CButton from '../../components/common/CButton';
+import CInfoBlock from '../../components/common/CInfoBlock';
 import CInput from '../../components/common/CInput';
 import useAppDispatch from '../../hooks/useAppDispatch';
 
@@ -8,6 +9,8 @@ import '../../styles/CreateAccount.scss';
 import { usePersistentCountdown } from '../../hooks/usePersistentCountdown';
 import CLink from '../../components/common/CLink';
 import { confirmEmail, sendConfirmEmail } from '../../store/auth/authSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/store';
 
 const ConfirmRegitstration = () => {
     const defaultConfirmationData = {
@@ -22,6 +25,7 @@ const ConfirmRegitstration = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
+    const { error, loading } = useSelector((state: RootState) => state.auth);
 
     const sendCountdown = usePersistentCountdown(
         "wip:auth:confirm_registration:resend_code",
@@ -31,7 +35,7 @@ const ConfirmRegitstration = () => {
     );
 
     useEffect(() => {
-        const usernameFromParams = searchParams.get('username');
+        const usernameFromParams = searchParams.get('username') || searchParams.get('confirm_email');
         if (usernameFromParams) {
             updateConfirmationData({ username: usernameFromParams });
         } else {
@@ -45,10 +49,17 @@ const ConfirmRegitstration = () => {
             .unwrap()
             .then(() => {
                 sendCountdown.clear();
+                navigate({
+                    pathname: '/login',
+                    search: new URLSearchParams({
+                        confirmed: '1',
+                        username: confirmationData.username,
+                    }).toString(),
+                });
             })
             .catch((err) => console.log(err));
 
-    }, [confirmationData]);
+    }, [confirmationData, dispatch, navigate, sendCountdown]);
 
     const handleResend = () => {
         if (sendCountdown.canStart) {
@@ -64,6 +75,9 @@ const ConfirmRegitstration = () => {
     return (
         <div className='container'>
             <h2>Confirm Email</h2>
+            <CInfoBlock type='error' show={!!error}>
+                {error}
+            </CInfoBlock>
             <form onSubmit={handleSubmit} noValidate>
                 <CInput
                     value={confirmationData.code}
@@ -73,14 +87,12 @@ const ConfirmRegitstration = () => {
                     fieldKey='code'
                     onChange={updateConfirmationData}
                 />
-                <CButton type="button" onClick={handleResend}>Resend Code{sendCountdown.isActive && ` (${sendCountdown.secondsLeft}s)`}</CButton>
-                <CButton type='submit'>Verify</CButton>
+                <CButton type="button" onClick={handleResend} disabled={sendCountdown.isActive || loading}>
+                    Resend Code{sendCountdown.isActive && ` (${sendCountdown.secondsLeft}s)`}
+                </CButton>
+                <CButton type='submit' loading={loading}>Verify</CButton>
                 <CLink href='/login'>Login</CLink>
             </form>
-            <div>
-                <h3>Debug</h3>
-                <div>{JSON.stringify(confirmationData)}</div>
-            </div>
         </div>
     )
 }

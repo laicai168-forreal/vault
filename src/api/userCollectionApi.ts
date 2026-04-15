@@ -1,9 +1,10 @@
 import axios from 'axios';
 import { CollectionEntry, GetUserCollectionByCarParams, GetUserCollectionParams, UserCollectionParams } from '../types/UserCollection';
 import { getApiContext } from './apiContext';
+import { apiConfig } from './config';
 
 const api = axios.create({
-    baseURL: 'https://29367920u8.execute-api.us-east-1.amazonaws.com/',
+    baseURL: apiConfig.collectionApiBaseUrl,
     headers: {
         'Content-Type': 'application/json',
     },
