@@ -49,6 +49,8 @@ export type AdminCarPayload = {
 	images?: Array<Record<string, unknown>>;
 };
 
+// Customer suggestion payload. The backend stores this as a pending review request
+// instead of mutating the `cars` table directly.
 export type CarChangeRequestPayload = {
 	car_id?: string;
 	request_type: string;
@@ -56,6 +58,7 @@ export type CarChangeRequestPayload = {
 	uploaded_images?: Array<Record<string, unknown>>;
 };
 
+// Lightweight quota summary used by the customer editor banner and submit guard.
 export type CarChangeRequestSummary = {
 	weeklyLimit: number;
 	usedCount: number;
@@ -129,6 +132,7 @@ export const fetchCarById = async (cid: string) => {
 	return response.data;
 };
 
+// Admin-only direct create. This calls the user/admin API because writes are gated by role.
 export const createAdminCar = async (payload: AdminCarPayload) => {
 	const response = await adminApi.post('/admin/cars', payload, {
 		headers: getAuthHeaders(),
@@ -136,6 +140,7 @@ export const createAdminCar = async (payload: AdminCarPayload) => {
 	return response.data;
 };
 
+// Admin-only direct update for an existing car row.
 export const updateAdminCar = async (carId: string, payload: AdminCarPayload) => {
 	const response = await adminApi.post(`/admin/cars/${carId}`, payload, {
 		headers: getAuthHeaders(),
@@ -143,6 +148,7 @@ export const updateAdminCar = async (carId: string, payload: AdminCarPayload) =>
 	return response.data;
 };
 
+// Admin-only hard delete for maintenance workflows.
 export const deleteAdminCar = async (carId: string) => {
 	const response = await adminApi.delete(`/admin/cars/${carId}`, {
 		headers: getAuthHeaders(),
@@ -150,6 +156,7 @@ export const deleteAdminCar = async (carId: string) => {
 	return response.data;
 };
 
+// Admin-only duplicate endpoint. The backend clones the source car, then applies overrides from payload.
 export const duplicateAdminCar = async (carId: string, payload: AdminCarPayload) => {
 	const response = await adminApi.post(`/admin/cars/${carId}/duplicate`, payload, {
 		headers: getAuthHeaders(),
@@ -157,6 +164,7 @@ export const duplicateAdminCar = async (carId: string, payload: AdminCarPayload)
 	return response.data;
 };
 
+// Customer-facing suggestion submit. This creates a pending request for admin review.
 export const submitCarChangeRequest = async (payload: CarChangeRequestPayload) => {
 	const response = await adminApi.post('/car-change-requests', payload, {
 		headers: getAuthHeaders(),
@@ -164,6 +172,7 @@ export const submitCarChangeRequest = async (payload: CarChangeRequestPayload) =
 	return response.data;
 };
 
+// Customer-facing quota summary used to show remaining weekly chances in the editor.
 export const fetchCarChangeRequestSummary = async (): Promise<CarChangeRequestSummary> => {
 	const response = await adminApi.get('/car-change-requests/summary', {
 		headers: getAuthHeaders(),
@@ -171,6 +180,8 @@ export const fetchCarChangeRequestSummary = async (): Promise<CarChangeRequestSu
 	return response.data;
 };
 
+// Admin-only lookup data for normalized car fields.
+// `productLines` includes `brand_id` so the editor can filter options by selected brand.
 export const fetchAdminCarFormOptions = async (): Promise<AdminCarFormOptions> => {
 	const response = await adminApi.get('/admin/car-form-options', {
 		headers: getAuthHeaders(),
