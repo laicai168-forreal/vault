@@ -4,12 +4,17 @@ import WantToGarageButton from "./WantToGarageButton";
 import ViewCarDetailsButton from "./ViewCarDetailsButton";
 import { CollectionEntry } from "../types/UserCollection";
 import CImage from "./common/CImage";
+import { getPrimaryWithAiFallback } from "../utils/carDisplay";
 
 type PropsType = {
     img: string;
     brand: string;
     title: string;
     originalId: string;
+    make?: string;
+    makeAi?: string;
+    releaseDateApproximate?: string;
+    releaseDateAi?: string;
     carId?: string;
     own?: boolean;
     like?: boolean;
@@ -27,6 +32,10 @@ const SearchItem = ({
     title,
     carId,
     originalId,
+    make,
+    makeAi,
+    releaseDateApproximate,
+    releaseDateAi,
     own,
     like,
     loadingLike = false,
@@ -36,6 +45,9 @@ const SearchItem = ({
     onView,
     onSuggestEdit,
 }: PropsType) => {
+    const makeDisplay = getPrimaryWithAiFallback(make, makeAi);
+    const releaseDateDisplay = getPrimaryWithAiFallback(releaseDateApproximate, releaseDateAi);
+
     return (
         <div className={`search-item-container ${own ? 'owned' : ''}`}>
             <div className="image-wrapper" onClick={() => carId && onView && onView(carId)}>
@@ -46,6 +58,22 @@ const SearchItem = ({
                 <span className='search-item-title-brand'>{`${brand} `}</span>{title}
             </div>
             <div className="search-item-bottom">
+                {(makeDisplay.value || releaseDateDisplay.value) && (
+                    <div className="search-item-meta">
+                        {makeDisplay.value && (
+                            <div>
+                                <span className="search-item-meta-label">Make:</span> {makeDisplay.value}
+                                {makeDisplay.isAiFallback && <span className="search-item-ai-indicator">(AI generated)</span>}
+                            </div>
+                        )}
+                        {releaseDateDisplay.value && (
+                            <div>
+                                <span className="search-item-meta-label">Release:</span> {releaseDateDisplay.value}
+                                {releaseDateDisplay.isAiFallback && <span className="search-item-ai-indicator">(AI generated)</span>}
+                            </div>
+                        )}
+                    </div>
+                )}
                 <div className="search-item-sku">
                     {originalId}
                 </div>

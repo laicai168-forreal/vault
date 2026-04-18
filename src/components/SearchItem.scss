@@ -64,6 +64,24 @@
         padding-top: 1rem;
     }
 
+    .search-item-meta {
+        margin-bottom: 0.45rem;
+        font-size: 0.8rem;
+        color: #4f4f4f;
+        line-height: 1.45;
+    }
+
+    .search-item-meta-label {
+        font-weight: 600;
+    }
+
+    .search-item-ai-indicator {
+        margin-left: 0.3rem;
+        font-size: 0.75rem;
+        color: #7a7a7a;
+        white-space: nowrap;
+    }
+
     .search-item-sku {
         font-size: 0.85rem;
         color: var(--color-font-main);

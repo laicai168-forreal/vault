@@ -67,6 +67,34 @@ export type CarChangeRequestSummary = {
 	resetAt: string | null;
 };
 
+export type CarChangeRequestItem = {
+	id: string;
+	car_id?: string | null;
+	car_title?: string | null;
+	submitted_by?: string;
+	submitted_by_username?: string | null;
+	reviewed_by?: string | null;
+	reviewed_by_username?: string | null;
+	status: 'pending' | 'approved' | 'rejected';
+	request_type: string;
+	payload: Record<string, any>;
+	uploaded_images?: Array<Record<string, any>>;
+	review_notes?: string | null;
+	created_at: string;
+	reviewed_at?: string | null;
+};
+
+export type CarChangeRequestDetail = {
+	request: CarChangeRequestItem;
+	currentCar: Record<string, any> | null;
+};
+
+export type ReviewCarChangeRequestPayload = {
+	status: 'approved' | 'rejected';
+	reviewNotes?: string;
+	finalPayload?: Record<string, unknown>;
+};
+
 export type CarFormLookupOption = {
 	id: string;
 	name: string;
@@ -184,6 +212,70 @@ export const fetchCarChangeRequestSummary = async (): Promise<CarChangeRequestSu
 // `productLines` includes `brand_id` so the editor can filter options by selected brand.
 export const fetchAdminCarFormOptions = async (): Promise<AdminCarFormOptions> => {
 	const response = await adminApi.get('/admin/car-form-options', {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const fetchAdminCarChangeRequests = async (params?: {
+	status?: string;
+	limit?: number;
+	offset?: number;
+}): Promise<CarChangeRequestItem[]> => {
+	// Admin queue listing used by the maintenance/review surface.
+	const response = await adminApi.get('/admin/car-change-requests', {
+		headers: getAuthHeaders(),
+		params,
+	});
+	return response.data;
+};
+
+export const fetchAdminCarChangeRequestDetail = async (requestId: string): Promise<CarChangeRequestDetail> => {
+	// Includes both the request row and the latest linked car for side-by-side review.
+	const response = await adminApi.get(`/admin/car-change-requests/${requestId}`, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const reviewAdminCarChangeRequest = async (
+	requestId: string,
+	payload: ReviewCarChangeRequestPayload,
+): Promise<{ request: CarChangeRequestItem; car?: Record<string, unknown> | null }> => {
+	// Admin review can either reject, or approve with a refined final payload.
+	const response = await adminApi.post(`/admin/car-change-requests/${requestId}/review`, payload, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const fetchMyCarChangeRequests = async (params?: {
+	status?: string;
+	limit?: number;
+	offset?: number;
+}): Promise<CarChangeRequestItem[]> => {
+	// Customer history list for "My Suggestions".
+	const response = await adminApi.get('/car-change-requests', {
+		headers: getAuthHeaders(),
+		params,
+	});
+	return response.data;
+};
+
+export const fetchMyCarChangeRequestDetail = async (requestId: string): Promise<CarChangeRequestDetail> => {
+	// Rehydrates a pending request back into the customer editor for updates.
+	const response = await adminApi.get(`/car-change-requests/${requestId}`, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const updateMyCarChangeRequest = async (
+	requestId: string,
+	payload: Partial<CarChangeRequestPayload>,
+): Promise<CarChangeRequestDetail> => {
+	// Partial update so the editor can revise just the pending request fields it owns.
+	const response = await adminApi.post(`/car-change-requests/${requestId}`, payload, {
 		headers: getAuthHeaders(),
 	});
 	return response.data;

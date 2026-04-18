@@ -1,0 +1,148 @@
+.car-change-requests-page {
+    padding: 2.5rem 1.5rem 3rem;
+    color: var(--color-font-main);
+
+    .car-change-requests-header,
+    .car-change-requests-toolbar,
+    .car-change-requests-table,
+    .car-change-requests-loading,
+    .car-change-requests-alert {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+    }
+
+    .car-change-requests-header,
+    .car-change-requests-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .car-change-requests-header h1 {
+        margin: 0 0 0.5rem;
+    }
+
+    .car-change-requests-header p,
+    .car-change-requests-loading span {
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .car-change-requests-filters {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        button {
+            border: 1px solid #c6c6c6;
+            background: #fff;
+            border-radius: 4px;
+            padding: 0.45rem 0.85rem;
+            cursor: pointer;
+        }
+
+        .active {
+            background: #f4f4f4;
+        }
+    }
+
+    .car-change-requests-link {
+        color: inherit;
+    }
+
+    .car-change-requests-loading,
+    .car-change-requests-alert {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .car-change-requests-alert.error {
+        color: #9d2222;
+        background: #fff1f1;
+    }
+
+    .car-change-requests-table {
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .car-change-requests-row {
+        display: grid;
+        grid-template-columns: minmax(7rem, 0.8fr) minmax(0, 1.5fr) minmax(7rem, 0.8fr) minmax(12rem, 1fr) minmax(10rem, 0.8fr);
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #dcdcdc;
+    }
+
+    .car-change-requests-row:last-child {
+        border-bottom: none;
+    }
+
+    .car-change-requests-row-header {
+        font-weight: 700;
+        background: #f6f6f6;
+    }
+
+    .car-change-requests-actions button {
+        border: 1px solid #c6c6c6;
+        background: #fff;
+        border-radius: 4px;
+        padding: 0.45rem 0.85rem;
+        cursor: pointer;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.2rem 0.55rem;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        text-transform: capitalize;
+        width: fit-content;
+    }
+
+    .status-pill.pending {
+        background: #fff7eb;
+        color: #8a4b14;
+        border-color: #d8b58f;
+    }
+
+    .status-pill.approved {
+        background: #eef8f1;
+        color: #1a6a38;
+        border-color: #9fc9aa;
+    }
+
+    .status-pill.rejected {
+        background: #fff1f1;
+        color: #9d2222;
+        border-color: #e0b3b3;
+    }
+
+    .car-change-requests-empty {
+        padding: 1.25rem;
+        color: #666;
+    }
+
+    @media (max-width: 900px) {
+        .car-change-requests-header,
+        .car-change-requests-toolbar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .car-change-requests-row,
+        .car-change-requests-row-header {
+            grid-template-columns: 1fr;
+        }
+    }
+}

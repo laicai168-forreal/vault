@@ -6,7 +6,20 @@ import { useSelector } from "react-redux";
 
 import { CircularProgress } from "@mui/material";
 
-import { AdminCarFormOptions, createAdminCar, deleteAdminCar, duplicateAdminCar, fetchAdminCarFormOptions, fetchCarById, fetchCarChangeRequestSummary, submitCarChangeRequest, updateAdminCar } from "../../api/carApi";
+import {
+    AdminCarFormOptions,
+    CarChangeRequestDetail,
+    createAdminCar,
+    deleteAdminCar,
+    duplicateAdminCar,
+    fetchAdminCarFormOptions,
+    fetchCarById,
+    fetchCarChangeRequestSummary,
+    fetchMyCarChangeRequestDetail,
+    submitCarChangeRequest,
+    updateAdminCar,
+    updateMyCarChangeRequest,
+} from "../../api/carApi";
 import defaultImage from "../../assets/images/default_item_image.jpg";
 import CComboBox from "../../components/common/CComboBox";
 import CButton from "../../components/common/CButton";
@@ -75,7 +88,7 @@ function normalizeCarToForm(car?: Partial<Car> | null): CarEditorForm {
         product_line: car.product_line || "",
         product_line_id: car.product_line_id,
         original_id: car.original_id || car.originalId || "",
-        source_url: car.product_url || "",
+        source_url: car.source_url || car.product_url || "",
         release_date_approximate: car.release_date_approximate || "",
         description_ai: car.description_ai || "",
         is_chase: false,
@@ -99,6 +112,7 @@ const CarEditor = () => {
     const [optionsLoading, setOptionsLoading] = useState(false);
     const [form, setForm] = useState<CarEditorForm>(emptyForm);
     const [sourceCar, setSourceCar] = useState<Car | null>(null);
+    const [requestDetail, setRequestDetail] = useState<CarChangeRequestDetail | null>(null);
     const [existingImages, setExistingImages] = useState<ImageObj[]>([]);
     const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
     const isAdmin = currentUser?.role === "admin";
@@ -117,13 +131,63 @@ const CarEditor = () => {
                 : "suggest"
     ) as EditorIntent;
     const cid = searchParams.get("cid") || "";
+    const requestId = searchParams.get("requestId") || "";
     const isAdminDenied = requestedActor === "admin" && !userLoading && !isAdmin;
 
     useEffect(() => {
         let isMounted = true;
 
+        if (actor === "customer" && requestId) {
+            setLoading(true);
+            setLoadError(null);
+
+            fetchMyCarChangeRequestDetail(requestId)
+                .then((detail) => {
+                    if (!isMounted) return;
+
+                    const currentCar = detail.currentCar as Car | null;
+                    const requestPayload = detail.request.payload || {};
+                    const baseForm = normalizeCarToForm(currentCar);
+                    setRequestDetail(detail);
+                    setSourceCar(currentCar);
+                    setExistingImages((requestPayload.existing_images as ImageObj[]) || currentCar?.images || []);
+                    setForm({
+                        ...baseForm,
+                        code: String(requestPayload.code || baseForm.code || ""),
+                        brand: String(requestPayload.brand || baseForm.brand || ""),
+                        brand_id: requestPayload.brand_id || baseForm.brand_id,
+                        title: String(requestPayload.title || baseForm.title || ""),
+                        make: String(requestPayload.make || baseForm.make || ""),
+                        make_id: requestPayload.make_id || baseForm.make_id,
+                        model_ai: String(requestPayload.model_ai || baseForm.model_ai || ""),
+                        scale: String(requestPayload.scale || baseForm.scale || ""),
+                        product_line: String(requestPayload.product_line || baseForm.product_line || ""),
+                        product_line_id: requestPayload.product_line_id || baseForm.product_line_id,
+                        original_id: String(requestPayload.original_id || baseForm.original_id || ""),
+                        source_url: baseForm.source_url,
+                        release_date_approximate: String(requestPayload.release_date_approximate || baseForm.release_date_approximate || ""),
+                        description_ai: String(requestPayload.description_ai || baseForm.description_ai || ""),
+                        is_chase: typeof requestPayload.is_chase === "boolean" ? requestPayload.is_chase : baseForm.is_chase,
+                        is_limited: typeof requestPayload.is_limited === "boolean" ? requestPayload.is_limited : baseForm.is_limited,
+                        limited_pieces: requestPayload.limited_pieces ? String(requestPayload.limited_pieces) : baseForm.limited_pieces,
+                    });
+                })
+                .catch((error: Error) => {
+                    if (!isMounted) return;
+                    setLoadError(error.message || "Failed to load request details.");
+                })
+                .finally(() => {
+                    if (isMounted) setLoading(false);
+                });
+
+            return () => {
+                isMounted = false;
+            };
+        }
+
         if (!cid) {
             setSourceCar(null);
+            setRequestDetail(null);
             setForm(emptyForm);
             setExistingImages([]);
             setLoadError(null);
@@ -136,6 +200,7 @@ const CarEditor = () => {
         fetchCarById(cid)
             .then((car) => {
                 if (!isMounted) return;
+                setRequestDetail(null);
                 setSourceCar(car);
                 setExistingImages(car.images || []);
                 setForm(
@@ -155,7 +220,7 @@ const CarEditor = () => {
         return () => {
             isMounted = false;
         };
-    }, [cid, intent]);
+    }, [actor, cid, intent, requestId]);
 
     useEffect(() => {
         let isMounted = true;
@@ -218,11 +283,13 @@ const CarEditor = () => {
 
     const helperText = actor === "admin"
         ? "Admin submissions save directly to the car record. Duplicate and delete actions are available here for data maintenance."
-        : "Customer submissions create a pending review item for admin approval. Image upload storage can be added next once we decide where the files should land.";
+        : requestId
+            ? "You can update a pending suggestion here before it is reviewed by an admin."
+            : "Customer submissions create a pending review item for admin approval. Image upload storage can be added next once we decide where the files should land.";
 
     const primaryButtonLabel = actor === "admin"
         ? (intent === "create" || intent === "duplicate" ? "Create Entry" : "Save Changes")
-        : "Submit Suggestion";
+        : requestId ? "Update Suggestion" : "Submit Suggestion";
 
     const updateField = (patch: Partial<CarEditorForm>) => {
         setForm((prev) => ({ ...prev, ...patch }));
@@ -306,11 +373,14 @@ const CarEditor = () => {
         images: existingImages.length > 0 ? existingImages : undefined,
     });
 
-    const buildCustomerPayload = () => ({
+    const buildCustomerPayload = () => {
+        const basePayload = buildAdminPayload();
+
+        return {
         car_id: cid || undefined,
         request_type: intent === "create" ? "create" : "correction",
         payload: {
-            ...buildAdminPayload(),
+            ...basePayload,
             existing_images: existingImages,
             primary_image: existingImages[0] || null,
             selected_image_names: selectedFiles.map((file) => file.name),
@@ -320,7 +390,8 @@ const CarEditor = () => {
             content_type: file.type,
             size: file.size,
         })),
-    });
+        };
+    };
 
     const handleSubmit = async () => {
         setSaving(true);
@@ -347,14 +418,16 @@ const CarEditor = () => {
                     navigate(`/cars/edit?actor=admin&intent=edit&cid=${response.id}`);
                 }
             } else {
-                await submitCarChangeRequest(buildCustomerPayload());
-                setSubmitSuccess("Suggestion submitted for admin review.");
-                setRemainingCount((current) => current === null ? current : Math.max(current - 1, 0));
-                if (cid) {
-                    navigate(`/car_detail?cid=${cid}`);
+                if (requestId) {
+                    await updateMyCarChangeRequest(requestId, buildCustomerPayload());
+                    navigate("/cars/requests");
+                    return;
                 } else {
-                    setForm(emptyForm);
-                    setSelectedFiles([]);
+                    await submitCarChangeRequest(buildCustomerPayload());
+                    setSubmitSuccess("Suggestion submitted for admin review.");
+                    setRemainingCount((current) => current === null ? current : Math.max(current - 1, 0));
+                    navigate("/cars/requests");
+                    return;
                 }
             }
         } catch (error: any) {
@@ -406,7 +479,8 @@ const CarEditor = () => {
         saving ||
         loading ||
         (actor === "admin" && intent === "create" && (!form.code || !form.brand)) ||
-        (actor === "customer" && remainingCount !== null && remainingCount <= 0);
+        (actor === "customer" && requestId !== "" && requestDetail?.request.status !== "pending") ||
+        (actor === "customer" && requestId === "" && remainingCount !== null && remainingCount <= 0);
 
     return (
         <CContainer className="car-editor-page">
@@ -679,7 +753,9 @@ const CarEditor = () => {
                         <div className="car-editor-footer-copy">
                             {actor === "admin"
                                 ? "Admin updates now write directly to the backend."
-                                : "Customer submissions now create pending change requests for review."}
+                                : requestId
+                                    ? `Customer request status: ${requestDetail?.request.status || "pending"}.`
+                                    : "Customer submissions now create pending change requests for review."}
                         </div>
                         <div className="car-editor-footer-actions">
                             {actor === "admin" && cid && intent !== "duplicate" && (

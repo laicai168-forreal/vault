@@ -10,6 +10,7 @@ import "./CollectionByCar.scss";
 import CButton from "./common/CButton";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
 import CComboBox from "./common/CComboBox";
+import { getPrimaryWithAiFallback } from "../utils/carDisplay";
 
 interface CollectionByCarProps {
     conditionTypes?: string[];
@@ -227,6 +228,8 @@ const CollectionByCar = ({
     onSave = noop,
     onDelete = noop,
 }: CollectionByCarProps) => {
+    const makeDisplay = getPrimaryWithAiFallback(car?.make, car?.make_ai);
+    const releaseDateDisplay = getPrimaryWithAiFallback(car?.release_date_approximate, car?.release_date_ai);
     const [localItems, setLocalItems] = useState(items);
     const [originalItems, setOriginalItems] = useState(items);
     const [changedMap, setChangedMap] = useState(new Set());
@@ -412,6 +415,22 @@ const CollectionByCar = ({
                         <div>
                             Product Id: {car?.originalId || ''}
                         </div>
+                        {(makeDisplay.value || releaseDateDisplay.value) && (
+                            <div className="collection-by-car-meta">
+                                {makeDisplay.value && (
+                                    <div>
+                                        <span className="collection-by-car-meta-label">Make:</span> {makeDisplay.value}
+                                        {makeDisplay.isAiFallback && <span className="collection-by-car-ai-indicator">(AI generated)</span>}
+                                    </div>
+                                )}
+                                {releaseDateDisplay.value && (
+                                    <div>
+                                        <span className="collection-by-car-meta-label">Release:</span> {releaseDateDisplay.value}
+                                        {releaseDateDisplay.isAiFallback && <span className="collection-by-car-ai-indicator">(AI generated)</span>}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,5 +1,5 @@
 import CActionButton from "./common/CActionButton";
-import { FaRegStar, FaStar } from "react-icons/fa";
+import { FaRegHeart, FaHeart } from "react-icons/fa";
 
 interface ActionButtonProps {
     loading?: boolean;
@@ -14,7 +14,7 @@ const WantToGarageButton = ({
 }: ActionButtonProps) => {
     return (
         <CActionButton loading={loading} onClick={onClick}>
-            {like ? <FaStar title="Remove from likes" /> : <FaRegStar title="Add to likes" />}
+            {like ? <FaHeart title="Remove from likes" /> : <FaRegHeart title="Add to likes" />}
         </CActionButton>
     )
 }

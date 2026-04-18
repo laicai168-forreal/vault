@@ -92,9 +92,14 @@ const AdminCars = () => {
                         Basic maintenance view powered by the current car list API. It is intentionally simple for now and gives us a clean bridge into the shared editor flow.
                     </p>
                 </div>
-                <CButton onClick={() => navigate("/cars/edit?actor=admin&intent=create")}>
-                    Add New Entry
-                </CButton>
+                <div className="admin-cars-header-actions">
+                    <CButton theme="mono" onClick={() => navigate("/admin/car-requests")}>
+                        Review Suggestions
+                    </CButton>
+                    <CButton onClick={() => navigate("/cars/edit?actor=admin&intent=create")}>
+                        Add New Entry
+                    </CButton>
+                </div>
             </div>
 
             <div className="admin-cars-toolbar">

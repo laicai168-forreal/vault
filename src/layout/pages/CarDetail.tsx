@@ -110,8 +110,10 @@ const CarDetail = () => {
                                 like={currentCar.liked}
                                 images={currentCar.images}
                                 description={currentCar.description_ai}
+                                make={currentCar.make}
                                 make_ai={currentCar.make_ai}
                                 model_ai={currentCar.model_ai}
+                                release_date_approximate={currentCar.release_date_approximate}
                                 release_date_ai={currentCar.release_date_ai}
                                 loadingAdd={currentCar.loadingAdd}
                                 loadingLike={currentCar.loadingLike}

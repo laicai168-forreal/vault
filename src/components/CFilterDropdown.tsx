@@ -14,9 +14,10 @@ type CFilterDropdownProps = {
     options?: CFilterDropdownOption[];
     value?: string;
     onChange?: (value: string) => void;
+    placeholder?: string;
 };
 
-const CFilterDropdown = ({ options, value, onChange }: CFilterDropdownProps) => {
+const CFilterDropdown = ({ options, value, onChange, placeholder }: CFilterDropdownProps) => {
     const [localValue, setLocalValue] = useState<string | undefined>("");
     const [isDropDownOpened, setIsDropDownOpened] = useState(false);
     const dropDownPanelRef = useClickOutside<HTMLDivElement>(() => {
@@ -40,6 +41,7 @@ const CFilterDropdown = ({ options, value, onChange }: CFilterDropdownProps) => 
     }
 
     const getDisplayTextByValue = () => {
+        if (!localValue && placeholder) return placeholder;
         return options?.find((o) => o.value === localValue)?.displayText || localValue;
     }
 

@@ -25,6 +25,13 @@
         }
     }
 
+    .detail-car-ai-indicator {
+        margin-left: 0.35rem;
+        font-size: 0.78rem;
+        color: #7a7a7a;
+        white-space: nowrap;
+    }
+
     @media (min-width: 0) {
         flex-direction: column;
     }

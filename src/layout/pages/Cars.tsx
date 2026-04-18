@@ -1,6 +1,6 @@
 import './Cars.scss';
 
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
@@ -17,7 +17,6 @@ import { useAuthAction } from '../../hooks/useAuthAction';
 import { addUserCollection, deleteUserCollection, dislikeUserCollection, likeUserCollection } from '../../store/userCollection/userCollectionSlice';
 import { CollectionEntry } from '../../types/UserCollection';
 import { getCarCfnUrlByS3Url } from '../../utils/carsUtil';
-import CButton from '../../components/common/CButton';
 
 export default function Cars() {
 	const dispatch = useDispatch<AppDispatch>();
@@ -25,6 +24,7 @@ export default function Cars() {
 	const { brands, carsByPage, currentPage, pageNum, pageLimit, loading, error } = useSelector((state: RootState) => state.cars);
 	const { currentUser } = useSelector((state: RootState) => state.user);
 	const [searchParams, setSearchParams] = useSearchParams();
+	const [actionMenuValue, setActionMenuValue] = useState('');
 	const brandOptions = useRef<CFilterDropdownOption[]>([]);
 	const obrdOptions: CFilterDropdownOption[] = [
 		{
@@ -50,6 +50,42 @@ export default function Cars() {
 	const page = parseInt(searchParams.get('page') || '1', 10);
 	const obrd = searchParams.get('obrd') || '';
 	const isAdmin = currentUser?.role === 'admin';
+
+	const actionOptions = useMemo<CFilterDropdownOption[]>(() => {
+		const options: CFilterDropdownOption[] = [
+			{
+				key: 'add-missing-car',
+				value: 'add-missing-car',
+				displayText: 'Add Missing Car',
+				onClick: () => navigate('/cars/edit?actor=customer&intent=create'),
+			},
+			{
+				key: 'my-suggestions',
+				value: 'my-suggestions',
+				displayText: 'My Suggestions',
+				onClick: () => navigate('/cars/requests'),
+			},
+		];
+
+		if (isAdmin) {
+			options.push(
+				{
+					key: 'review-suggestions',
+					value: 'review-suggestions',
+					displayText: 'Review Suggestions',
+					onClick: () => navigate('/admin/car-requests'),
+				},
+				{
+					key: 'admin-maintenance',
+					value: 'admin-maintenance',
+					displayText: 'Admin Maintenance',
+					onClick: () => navigate('/admin/cars'),
+				},
+			);
+		}
+
+		return options;
+	}, [isAdmin, navigate]);
 
 	const handleFilterChange = (key: string, value: string) => {
 		const newParams = new URLSearchParams(searchParams);
@@ -173,28 +209,32 @@ export default function Cars() {
 				<CircularProgress color="inherit" />
 			</Backdrop>
 			<div className='car-filter'>
-				<div className='car-filter-controls'>
-					<CFilterDropdown
-						value={brand}
-						options={brandOptions.current}
-						onChange={(value) => handleBrandChange(value)}
-					/>
-					<CFilterDropdown
-						value={obrd}
-						options={obrdOptions}
-						onChange={(value) => handleOBRDChange(value)}
-					/>
+				<div className='car-filter-section'>
+					<div className='car-filter-section-label'>Filters</div>
+					<div className='car-filter-controls'>
+						<CFilterDropdown
+							value={brand}
+							options={brandOptions.current}
+							onChange={(value) => handleBrandChange(value)}
+						/>
+						<CFilterDropdown
+							value={obrd}
+							options={obrdOptions}
+							onChange={(value) => handleOBRDChange(value)}
+						/>
+					</div>
 				</div>
-				<div className='car-filter-actions'>
-					<CButton onClick={() => navigate('/cars/edit?actor=customer&intent=create')}>
-						Add Missing Car
-					</CButton>
-					{
-						isAdmin &&
-						<CButton theme='mono' onClick={() => navigate('/admin/cars')}>
-							Admin Maintenance
-						</CButton>
-					}
+				<div className='car-filter-divider' />
+				<div className='car-filter-section car-filter-section-tools'>
+					<div className='car-filter-section-label'>Tools</div>
+					<div className='car-filter-actions'>
+						<CFilterDropdown
+							value={actionMenuValue}
+							options={actionOptions}
+							placeholder='Tools'
+							onChange={() => setActionMenuValue('')}
+						/>
+					</div>
 				</div>
 			</div>
 
@@ -208,6 +248,10 @@ export default function Cars() {
 								brand={PRODUCT_LINE[car.product_line || ''] || BRAND_NAME[car.brand]}
 								title={car.title}
 								originalId={car.original_id || ''}
+								make={car.make}
+								makeAi={car.make_ai}
+								releaseDateApproximate={car.release_date_approximate}
+								releaseDateAi={car.release_date_ai}
 								carId={car.id}
 								loadingAdd={car.loadingAdd}
 								loadingLike={car.loadingLike}

@@ -25,6 +25,7 @@ export default function NavBar() {
 	const { filterData: { keyword } } = useSelector((state: RootState) => state.filter);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const [isDropDownOpened, setIsDropDownOpened] = useState(false);
+	const isAdmin = currentUser?.role === 'admin';
 	const dropDownPanelRef = useClickOutside<HTMLDivElement>(() => {
 		setIsDropDownOpened(false);
 	});
@@ -129,6 +130,26 @@ export default function NavBar() {
 												className="drop-down-button"
 												onClick={() => handleDropDownButtonClick(() => navigate('/account'))}>
 												My Profile
+											</button>
+										}
+									</li>
+									<li>
+										{
+											isAuthenticated && isAdmin &&
+											<button
+												className="drop-down-button"
+												onClick={() => handleDropDownButtonClick(() => navigate('/admin/car-requests'))}>
+												Review Suggestions
+											</button>
+										}
+									</li>
+									<li>
+										{
+											isAuthenticated && isAdmin &&
+											<button
+												className="drop-down-button"
+												onClick={() => handleDropDownButtonClick(() => navigate('/admin/cars'))}>
+												Admin Maintenance
 											</button>
 										}
 									</li>

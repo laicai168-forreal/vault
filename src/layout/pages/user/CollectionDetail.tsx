@@ -13,6 +13,7 @@ import { AppDispatch, RootState } from "../../../store/store";
 import { useAuthAction } from "../../../hooks/useAuthAction";
 import "./CollectionDetail.scss";
 import CLoading from "../../../components/common/CLoading";
+import { getPrimaryWithAiFallback } from "../../../utils/carDisplay";
 
 interface CollectionByCarProps {
     items?: CollectionEntry[];
@@ -33,6 +34,8 @@ const CollectionDetail = ({
         editingCar,
         entriesByCar,
     } = useSelector((state: RootState) => state.userCollection);
+    const makeDisplay = getPrimaryWithAiFallback(editingCar?.make, editingCar?.make_ai);
+    const releaseDateDisplay = getPrimaryWithAiFallback(editingCar?.release_date_approximate, editingCar?.release_date_ai);
 
     const [localItems, setLocalItems] = useState(items);
     const [originalItems, setOriginalItems] = useState(items);
@@ -261,6 +264,22 @@ const CollectionDetail = ({
                         <div>
                             Product Id: {editingCar?.originalId || ''}
                         </div>
+                        {(makeDisplay.value || releaseDateDisplay.value) && (
+                            <div className="collection-by-car-meta">
+                                {makeDisplay.value && (
+                                    <div>
+                                        <span className="collection-by-car-meta-label">Make:</span> {makeDisplay.value}
+                                        {makeDisplay.isAiFallback && <span className="collection-by-car-ai-indicator">(AI generated)</span>}
+                                    </div>
+                                )}
+                                {releaseDateDisplay.value && (
+                                    <div>
+                                        <span className="collection-by-car-meta-label">Release:</span> {releaseDateDisplay.value}
+                                        {releaseDateDisplay.isAiFallback && <span className="collection-by-car-ai-indicator">(AI generated)</span>}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>

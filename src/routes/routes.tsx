@@ -20,6 +20,9 @@ import InnoCrawlHelper from "../layout/pages/crawler/InnoCrawlHelper";
 import PopraceCrawlHelper from "../layout/pages/crawler/PopraceCrawlHelper";
 import CollectionDetail from "../layout/pages/user/CollectionDetail";
 import AdminCars from "../layout/pages/admin/AdminCars";
+import AdminCarRequests from "../layout/pages/admin/AdminCarRequests";
+import AdminCarRequestReview from "../layout/pages/admin/AdminCarRequestReview";
+import CarChangeRequests from "../layout/pages/user/CarChangeRequests";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +37,10 @@ const router = createBrowserRouter([
       { path: "home", element: <Home /> },
       { path: "cars", element: <Cars /> },
       { path: "cars/edit", element: <CarEditor /> },
+      { path: "cars/requests", element: <CarChangeRequests /> },
       { path: "admin/cars", element: <AdminCars /> },
+      { path: "admin/car-requests", element: <AdminCarRequests /> },
+      { path: "admin/car-requests/review", element: <AdminCarRequestReview /> },
       { path: "car_detail", element: <CarDetail /> },
       { path: "brands", element: <Brands /> },
       { path: "settings", element: <Settings /> },

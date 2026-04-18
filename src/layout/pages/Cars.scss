@@ -4,12 +4,30 @@
 
   .car-filter {
     display: flex;
-    justify-content: space-between;
     gap: 1rem;
     margin-bottom: 1rem;
-    padding-left: 2rem;
-    align-items: center;
+    padding: 0 0 0 2rem;
+    align-items: stretch;
     flex-wrap: wrap;
+  }
+
+  .car-filter-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+    min-width: 0;
+  }
+
+  .car-filter-section-tools {
+    min-width: 12rem;
+  }
+
+  .car-filter-section-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #6f6f6f;
   }
 
   .car-filter-controls,
@@ -17,6 +35,13 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .car-filter-divider {
+    width: 1px;
+    align-self: stretch;
+    background: #d6d6d6;
   }
 
   .car-grid {
@@ -66,6 +91,15 @@
   @media (max-width: 900px) {
     .car-filter {
       padding-left: 0;
+    }
+
+    .car-filter-divider {
+      display: none;
+    }
+
+    .car-filter-section,
+    .car-filter-section-tools {
+      width: 100%;
     }
   }
 }

@@ -1,0 +1,259 @@
+.admin-car-request-review-page {
+    padding: 2.75rem 1.5rem 3rem;
+    color: var(--color-font-main);
+
+    .admin-car-request-review-header,
+    .admin-car-request-review-loading,
+    .admin-car-request-review-alert,
+    .admin-car-request-review-summary,
+    .admin-car-request-review-section,
+    .admin-car-request-review-footer {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+    }
+
+    .admin-car-request-review-header,
+    .admin-car-request-review-summary,
+    .admin-car-request-review-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: flex-start;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-car-request-review-header h1,
+    .admin-car-request-review-section h2 {
+        margin: 0 0 0.5rem;
+    }
+
+    .admin-car-request-review-header p,
+    .admin-car-request-review-summary p,
+    .admin-car-request-review-footer-copy {
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    .admin-car-request-review-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .admin-car-request-review-link {
+        display: inline-flex;
+        align-items: center;
+        min-height: 2.5rem;
+        padding: 0 1rem;
+        border: 1px solid #c6c6c6;
+        border-radius: 4px;
+        color: inherit;
+        text-decoration: none;
+        background: #fff;
+    }
+
+    .admin-car-request-review-loading,
+    .admin-car-request-review-alert {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-car-request-review-alert.error {
+        color: #9d2222;
+        background: #fff1f1;
+    }
+
+    .admin-car-request-review-alert.info {
+        background: #f6fbff;
+        color: #134978;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        text-transform: capitalize;
+        height: fit-content;
+    }
+
+    .status-pill.pending {
+        background: #fff7eb;
+        color: #8a4b14;
+        border-color: #d8b58f;
+    }
+
+    .status-pill.approved {
+        background: #eef8f1;
+        color: #1a6a38;
+        border-color: #9fc9aa;
+    }
+
+    .status-pill.rejected {
+        background: #fff1f1;
+        color: #9d2222;
+        border-color: #e0b3b3;
+    }
+
+    .admin-car-request-review-grid {
+        display: grid;
+        grid-template-columns: minmax(20rem, 1fr) minmax(22rem, 1.1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-car-request-review-section {
+        padding: 1.5rem;
+    }
+
+    .admin-car-request-compare-list {
+        display: grid;
+        gap: 0.75rem;
+    }
+
+    .admin-car-request-compare-card {
+        border: 1px solid #d6d6d6;
+        border-radius: 4px;
+        padding: 0.9rem;
+        background: #fafafa;
+
+        &.changed {
+            border-color: #d8b58f;
+            background: #fffaf2;
+        }
+    }
+
+    .admin-car-request-compare-header,
+    .admin-car-request-compare-actions {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .admin-car-request-compare-header {
+        margin-bottom: 0.75rem;
+    }
+
+    .admin-car-request-compare-title {
+        display: flex;
+        align-items: center;
+        gap: 0.55rem;
+        flex-wrap: wrap;
+    }
+
+    .change-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.15rem 0.45rem;
+        border: 1px solid #d8b58f;
+        border-radius: 4px;
+        background: #fff2de;
+        color: #8a4b14;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+
+    .admin-car-request-compare-columns {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem;
+    }
+
+    .muted-column,
+    .highlight-column {
+        padding: 0.65rem 0.75rem;
+        border-radius: 4px;
+    }
+
+    .muted-column {
+        background: #f4f4f4;
+    }
+
+    .highlight-column {
+        background: #fff2de;
+        border: 1px solid #e2c6a4;
+    }
+
+    .admin-car-request-compare-columns .label {
+        display: block;
+        color: #666;
+        font-size: 0.85rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .admin-car-request-compare-columns p {
+        margin: 0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        line-height: 1.45;
+    }
+
+    .admin-car-request-compare-actions button {
+        border: 1px solid #c6c6c6;
+        background: #fff;
+        border-radius: 4px;
+        padding: 0.35rem 0.7rem;
+        cursor: pointer;
+    }
+
+    .admin-car-request-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-car-request-check-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 2rem;
+    }
+
+    .admin-car-request-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
+
+    .admin-car-request-review-footer {
+        align-items: center;
+    }
+
+    .admin-car-request-review-footer-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 980px) {
+        .admin-car-request-review-header,
+        .admin-car-request-review-summary,
+        .admin-car-request-review-footer {
+            flex-direction: column;
+        }
+
+        .admin-car-request-review-grid,
+        .admin-car-request-form-grid,
+        .admin-car-request-compare-columns {
+            grid-template-columns: 1fr;
+        }
+
+        .admin-car-request-check-group {
+            padding-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+    }
+}
