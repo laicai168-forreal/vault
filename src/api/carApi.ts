@@ -1,8 +1,16 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 import { apiConfig } from './config';
+import { getApiContext } from './apiContext';
 
 const api = axios.create({
 	baseURL: apiConfig.carApiBaseUrl,
+	headers: {
+		'Content-Type': 'application/json',
+	},
+});
+
+const adminApi = axios.create({
+	baseURL: apiConfig.userApiBaseUrl,
 	headers: {
 		'Content-Type': 'application/json',
 	},
@@ -19,6 +27,64 @@ export type GetCarParams = {
 	keyword?: string;
 	obrd?: string;
 }
+
+export type AdminCarPayload = {
+	code?: string;
+	brand_id?: string;
+	brand?: string;
+	title?: string;
+	make_id?: string;
+	make?: string;
+	model_ai?: string;
+	scale?: string;
+	product_line_id?: string;
+	product_line?: string;
+	original_id?: string;
+	source_url?: string;
+	release_date_approximate?: string;
+	description_ai?: string;
+	is_chase?: boolean;
+	is_limited?: boolean;
+	limited_pieces?: number | null;
+	images?: Array<Record<string, unknown>>;
+};
+
+export type CarChangeRequestPayload = {
+	car_id?: string;
+	request_type: string;
+	payload: Record<string, unknown>;
+	uploaded_images?: Array<Record<string, unknown>>;
+};
+
+export type CarChangeRequestSummary = {
+	weeklyLimit: number;
+	usedCount: number;
+	remainingCount: number;
+	windowDays: number;
+	resetAt: string | null;
+};
+
+export type CarFormLookupOption = {
+	id: string;
+	name: string;
+	brand_id?: string;
+};
+
+export type AdminCarFormOptions = {
+	brands: CarFormLookupOption[];
+	makes: CarFormLookupOption[];
+	productLines: CarFormLookupOption[];
+};
+
+const getAuthHeaders = () => {
+	const token = getApiContext()?.getIdToken();
+
+	return token
+		? {
+			Authorization: `Bearer ${token}`,
+		}
+		: {};
+};
 
 api.interceptors.request.use((config: InternalAxiosRequestConfig<ApiConfigData>) => {
 	const { store } = require('../store/store');
@@ -60,5 +126,54 @@ export const fetchCars = async ({ limit, offset, bid, keyword, obrd }: GetCarPar
 
 export const fetchCarById = async (cid: string) => {
 	const response = await api.get('/cars', { params: { cid } });
+	return response.data;
+};
+
+export const createAdminCar = async (payload: AdminCarPayload) => {
+	const response = await adminApi.post('/admin/cars', payload, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const updateAdminCar = async (carId: string, payload: AdminCarPayload) => {
+	const response = await adminApi.post(`/admin/cars/${carId}`, payload, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const deleteAdminCar = async (carId: string) => {
+	const response = await adminApi.delete(`/admin/cars/${carId}`, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const duplicateAdminCar = async (carId: string, payload: AdminCarPayload) => {
+	const response = await adminApi.post(`/admin/cars/${carId}/duplicate`, payload, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const submitCarChangeRequest = async (payload: CarChangeRequestPayload) => {
+	const response = await adminApi.post('/car-change-requests', payload, {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const fetchCarChangeRequestSummary = async (): Promise<CarChangeRequestSummary> => {
+	const response = await adminApi.get('/car-change-requests/summary', {
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const fetchAdminCarFormOptions = async (): Promise<AdminCarFormOptions> => {
+	const response = await adminApi.get('/admin/car-form-options', {
+		headers: getAuthHeaders(),
+	});
 	return response.data;
 };

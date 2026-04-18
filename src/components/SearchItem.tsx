@@ -18,6 +18,7 @@ type PropsType = {
     onAdd?: (addCollectionEntry: CollectionEntry) => void;
     onLike?: (addCollectionEntry: CollectionEntry) => void;
     onView?: (cid: string) => void;
+    onSuggestEdit?: (cid: string) => void;
 }
 
 const SearchItem = ({
@@ -33,11 +34,12 @@ const SearchItem = ({
     onAdd,
     onLike,
     onView,
+    onSuggestEdit,
 }: PropsType) => {
     return (
         <div className={`search-item-container ${own ? 'owned' : ''}`}>
             <div className="image-wrapper" onClick={() => carId && onView && onView(carId)}>
-                <img className="blur-background" src={img} />
+                <img className="blur-background" src={img} alt="" />
                 <CImage src={img} />
             </div>
             <div className="search-item-title" title={title}>
@@ -47,6 +49,13 @@ const SearchItem = ({
                 <div className="search-item-sku">
                     {originalId}
                 </div>
+                <button
+                    type="button"
+                    className="search-item-edit-link"
+                    onClick={() => carId && onSuggestEdit && onSuggestEdit(carId)}
+                >
+                    Correct info
+                </button>
                 <div className="search-item-actions">
                     <AddToGarageButton
                         own={own}

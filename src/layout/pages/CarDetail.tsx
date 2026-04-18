@@ -2,8 +2,10 @@ import { Backdrop, CircularProgress } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router";
+import { useNavigate } from "react-router-dom";
 import CContainer from "../../components/common/CContainer";
 import DetailCard from "../../components/DetailCard";
+import CButton from "../../components/common/CButton";
 import { BRAND_NAME } from "../../constants/brand";
 import { getCarById, updateCurrentCar } from "../../store/cars/carsSlice";
 import { AppDispatch, RootState } from "../../store/store";
@@ -15,7 +17,8 @@ import "./CarDetail.scss";
 
 const CarDetail = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const [searchParams, setSearchParams] = useSearchParams();
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
     const { currentCar, loading } = useSelector((state: RootState) => state.cars);
     const cid = useRef<string>(searchParams.get('cid') || '');
 
@@ -72,7 +75,7 @@ const CarDetail = () => {
 
     useEffect(() => {
         dispatch(getCarById(cid.current))
-    }, []);
+    }, [dispatch]);
 
     return (
         <CContainer className="car-detail-container">
@@ -88,6 +91,14 @@ const CarDetail = () => {
             {
                 currentCar &&
                 <>
+                    <div className="car-detail-actions">
+                        <CButton
+                            theme="mono"
+                            onClick={() => navigate(`/cars/edit?actor=customer&intent=suggest&cid=${currentCar.id}`)}
+                        >
+                            Correct Info
+                        </CButton>
+                    </div>
                     {
 
                         <div key={currentCar.id}>

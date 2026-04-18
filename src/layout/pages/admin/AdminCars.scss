@@ -1,0 +1,124 @@
+.admin-cars-page {
+    padding: 2rem;
+    color: var(--color-font-main);
+
+    .admin-cars-header,
+    .admin-cars-toolbar,
+    .admin-cars-table,
+    .admin-cars-loading,
+    .admin-cars-alert {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+    }
+
+    .admin-cars-header,
+    .admin-cars-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-cars-header {
+        h1 {
+            margin: 0 0 0.5rem;
+        }
+
+        p {
+            margin: 0;
+            max-width: 48rem;
+            line-height: 1.5;
+        }
+    }
+
+    .admin-cars-toolbar-actions {
+        display: flex;
+        gap: 0.75rem;
+        padding-bottom: 0.2rem;
+    }
+
+    .admin-cars-meta {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        color: #666;
+    }
+
+    .admin-cars-link {
+        color: inherit;
+    }
+
+    .admin-cars-loading,
+    .admin-cars-alert {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-cars-alert.error {
+        color: #9d2222;
+        background: #fff1f1;
+    }
+
+    .admin-cars-table {
+        overflow: hidden;
+        margin-bottom: 1rem;
+    }
+
+    .admin-cars-row {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(9rem, 1fr) minmax(8rem, 1fr) minmax(16rem, 1.2fr);
+        gap: 1rem;
+        align-items: center;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid #dcdcdc;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .admin-cars-row-header {
+        font-weight: 700;
+        background: #f6f6f6;
+    }
+
+    .admin-cars-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+
+        button {
+            border: 1px solid #c6c6c6;
+            background: #fff;
+            border-radius: 4px;
+            padding: 0.45rem 0.85rem;
+            cursor: pointer;
+        }
+    }
+
+    .admin-cars-empty {
+        padding: 1.25rem;
+        color: #666;
+    }
+
+    @media (max-width: 900px) {
+        .admin-cars-header,
+        .admin-cars-toolbar,
+        .admin-cars-meta {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .admin-cars-row,
+        .admin-cars-row-header {
+            grid-template-columns: 1fr;
+        }
+    }
+}

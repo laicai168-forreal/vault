@@ -9,6 +9,7 @@ import ConfirmRegitstration from "../layout/auth/ConfirmRegitstration";
 import Brands from "../layout/pages/Brands";
 import Cars from "../layout/pages/Cars";
 import CarDetail from "../layout/pages/CarDetail";
+import CarEditor from "../layout/pages/CarEditor";
 import AdditionalDataHelper from "../layout/pages/AdditionalDataHelper";
 import ForgetPassword from "../layout/auth/ForgetPassword";
 import CollectionsList from "../layout/pages/user/CollectionsList";
@@ -18,6 +19,7 @@ import TWCrawlHelper from "../layout/pages/crawler/TWCrawlHelper";
 import InnoCrawlHelper from "../layout/pages/crawler/InnoCrawlHelper";
 import PopraceCrawlHelper from "../layout/pages/crawler/PopraceCrawlHelper";
 import CollectionDetail from "../layout/pages/user/CollectionDetail";
+import AdminCars from "../layout/pages/admin/AdminCars";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +33,8 @@ const router = createBrowserRouter([
       { path: "forget_password", element: <ForgetPassword /> },
       { path: "home", element: <Home /> },
       { path: "cars", element: <Cars /> },
+      { path: "cars/edit", element: <CarEditor /> },
+      { path: "admin/cars", element: <AdminCars /> },
       { path: "car_detail", element: <CarDetail /> },
       { path: "brands", element: <Brands /> },
       { path: "settings", element: <Settings /> },

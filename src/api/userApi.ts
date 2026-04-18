@@ -28,6 +28,7 @@ const getAuthHeaders = (accessToken?: string) => {
 const normalizeUserProfile = (data: any): UserProfile => ({
     id: data?.id,
     username: data?.username,
+    role: data?.role ?? null,
     email: data?.email ?? null,
     phoneNumber: data?.phone_number ?? data?.phoneNumber ?? null,
     bio: data?.bio ?? null,

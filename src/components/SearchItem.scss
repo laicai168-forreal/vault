@@ -70,6 +70,17 @@
         margin-bottom: 0.3rem;
     }
 
+    .search-item-edit-link {
+        padding: 0;
+        margin-bottom: 0.5rem;
+        border: none;
+        background: transparent;
+        color: var(--color-primary-hover);
+        font-weight: 600;
+        text-align: left;
+        cursor: pointer;
+    }
+
     .search-item-actions {
         display: flex;
         gap: 0.2rem;

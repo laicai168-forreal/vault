@@ -17,11 +17,13 @@ import { useAuthAction } from '../../hooks/useAuthAction';
 import { addUserCollection, deleteUserCollection, dislikeUserCollection, likeUserCollection } from '../../store/userCollection/userCollectionSlice';
 import { CollectionEntry } from '../../types/UserCollection';
 import { getCarCfnUrlByS3Url } from '../../utils/carsUtil';
+import CButton from '../../components/common/CButton';
 
 export default function Cars() {
 	const dispatch = useDispatch<AppDispatch>();
 	const navigate = useNavigate();
 	const { brands, carsByPage, currentPage, pageNum, pageLimit, loading, error } = useSelector((state: RootState) => state.cars);
+	const { currentUser } = useSelector((state: RootState) => state.user);
 	const [searchParams, setSearchParams] = useSearchParams();
 	const brandOptions = useRef<CFilterDropdownOption[]>([]);
 	const obrdOptions: CFilterDropdownOption[] = [
@@ -47,6 +49,7 @@ export default function Cars() {
 	// const sort = searchParams.get('sort') || 'name';
 	const page = parseInt(searchParams.get('page') || '1', 10);
 	const obrd = searchParams.get('obrd') || '';
+	const isAdmin = currentUser?.role === 'admin';
 
 	const handleFilterChange = (key: string, value: string) => {
 		const newParams = new URLSearchParams(searchParams);
@@ -95,7 +98,7 @@ export default function Cars() {
 			.catch((err) => {
 				//TODO: handle error
 			});
-	}, [searchParams]);
+	}, [brand, dispatch, keyword, obrd, page, pageLimit, searchParams]);
 
 	const handleAddCollection = useAuthAction((entity: CollectionEntry) => {
 		dispatch(updateSingleCar({ id: entity.carId, loadingAdd: true }));
@@ -155,7 +158,11 @@ export default function Cars() {
 
 	const handleViewCar = useCallback((cid: string) => {
 		navigate(`/car_detail?cid=${cid}`);
-	}, [])
+	}, [navigate])
+
+	const handleSuggestEdit = useCallback((cid: string) => {
+		navigate(`/cars/edit?actor=customer&intent=suggest&cid=${cid}`);
+	}, [navigate]);
 
 	return (
 		<div className='car-grid-container'>
@@ -166,16 +173,29 @@ export default function Cars() {
 				<CircularProgress color="inherit" />
 			</Backdrop>
 			<div className='car-filter'>
-				<CFilterDropdown
-					value={brand}
-					options={brandOptions.current}
-					onChange={(value) => handleBrandChange(value)}
-				/>
-				<CFilterDropdown
-					value={obrd}
-					options={obrdOptions}
-					onChange={(value) => handleOBRDChange(value)}
-				/>
+				<div className='car-filter-controls'>
+					<CFilterDropdown
+						value={brand}
+						options={brandOptions.current}
+						onChange={(value) => handleBrandChange(value)}
+					/>
+					<CFilterDropdown
+						value={obrd}
+						options={obrdOptions}
+						onChange={(value) => handleOBRDChange(value)}
+					/>
+				</div>
+				<div className='car-filter-actions'>
+					<CButton onClick={() => navigate('/cars/edit?actor=customer&intent=create')}>
+						Add Missing Car
+					</CButton>
+					{
+						isAdmin &&
+						<CButton theme='mono' onClick={() => navigate('/admin/cars')}>
+							Admin Maintenance
+						</CButton>
+					}
+				</div>
 			</div>
 
 			<div className='car-grid'>
@@ -196,6 +216,7 @@ export default function Cars() {
 								onAdd={car.own ? handleDeleteCollection : handleAddCollection}
 								onLike={car.liked ? handleDislikeCollection : handleLikeCollection}
 								onView={handleViewCar}
+								onSuggestEdit={handleSuggestEdit}
 							/>
 						</div>
 					))}

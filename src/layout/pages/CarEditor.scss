@@ -1,0 +1,317 @@
+.car-editor-page {
+    padding: 2.75rem 1rem 3rem;
+    color: var(--color-font-main);
+
+    .car-editor-header {
+        display: flex;
+        justify-content: space-between;
+        gap: 1.5rem;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+
+        h1 {
+            margin: 0.5rem 0 0.5rem;
+        }
+
+        p {
+            margin: 0;
+            max-width: 50rem;
+            line-height: 1.5;
+        }
+    }
+
+    .car-editor-header-actions {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .car-editor-link-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 2.5rem;
+        padding: 0 1rem;
+        border: 1px solid var(--color-steel);
+        border-radius: 999px;
+        color: var(--color-font-main);
+        text-decoration: none;
+        background: #fff;
+    }
+
+    .car-editor-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.3rem 0.8rem;
+        border-radius: 999px;
+        font-size: 0.85rem;
+        font-weight: 600;
+
+        &.admin {
+            background: #ebf4ff;
+            color: #1656a5;
+        }
+
+        &.customer {
+            background: #fff5ea;
+            color: #9b5317;
+        }
+    }
+
+    .car-editor-loading,
+    .car-editor-source-card,
+    .car-editor-alert,
+    .car-editor-section,
+    .car-editor-footer {
+        background: #fff;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+    }
+
+    .car-editor-loading {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .car-editor-source-card,
+    .car-editor-alert,
+    .car-editor-footer {
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .car-editor-source-card {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+
+        p {
+            margin: 0.3rem 0 0;
+        }
+    }
+
+    .car-editor-source-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        align-items: flex-end;
+        color: #666;
+        font-size: 0.95rem;
+    }
+
+    .car-editor-alert {
+        &.info {
+            background: #f6fbff;
+            color: #134978;
+        }
+
+        &.error {
+            background: #fff1f1;
+            color: #9d2222;
+        }
+    }
+
+    .car-editor-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(18rem, 1fr);
+        gap: 1rem;
+        margin: 1.25rem 0 1.5rem;
+    }
+
+    .car-editor-section {
+        padding: 1.5rem;
+
+        h2 {
+            margin-top: 0;
+        }
+    }
+
+    .car-editor-image-manager {
+        display: grid;
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+        gap: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .car-editor-primary-image {
+        padding: 1rem;
+        border: 1px solid #d6d6d6;
+        border-radius: 4px;
+        background: #fafafa;
+
+        img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 2px;
+            margin-bottom: 0.75rem;
+        }
+
+        p {
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+    }
+
+    .car-editor-primary-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: #5b5b5b;
+        margin-bottom: 0.6rem;
+    }
+
+    .car-editor-image-list {
+        display: grid;
+        gap: 0.75rem;
+        align-content: start;
+        max-height: 34rem;
+        overflow: auto;
+        padding-right: 0.25rem;
+    }
+
+    .car-editor-image-card {
+        display: grid;
+        grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+        gap: 0.75rem;
+        align-items: center;
+        padding: 0.75rem;
+        border: 1px solid #d6d6d6;
+        border-radius: 4px;
+        background: #fff;
+
+        &.primary {
+            border-color: #b8d6ff;
+            background: #f6fbff;
+        }
+
+        img {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 2px;
+        }
+    }
+
+    .car-editor-image-card-copy {
+        display: grid;
+        gap: 0.3rem;
+        min-width: 0;
+
+        strong,
+        span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        span {
+            color: #666;
+            font-size: 0.9rem;
+        }
+    }
+
+    .car-editor-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 0.75rem 1rem;
+    }
+
+    .car-editor-field-hint {
+        margin: -0.6rem 0 0;
+        color: #666;
+        font-size: 0.9rem;
+        line-height: 1.45;
+    }
+
+    .car-editor-check-group {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 2rem;
+    }
+
+    .car-editor-check {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+    }
+
+    .car-editor-upload {
+        margin-top: 1rem;
+
+        input {
+            display: block;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        p {
+            margin-bottom: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+    }
+
+    .car-editor-limit-note {
+        margin-bottom: 1rem;
+        padding: 0.9rem 1rem;
+        border: 1px solid #d8b58f;
+        border-radius: 4px;
+        background: #fff7eb;
+        color: #8a4b14;
+    }
+
+    .car-editor-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .car-editor-footer-copy {
+        line-height: 1.5;
+    }
+
+    .car-editor-footer-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 900px) {
+        .car-editor-header,
+        .car-editor-source-card,
+        .car-editor-footer {
+            flex-direction: column;
+        }
+
+        .car-editor-source-meta {
+            align-items: flex-start;
+        }
+
+        .car-editor-grid,
+        .car-editor-image-manager,
+        .car-editor-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .car-editor-check-group {
+            padding-top: 0.5rem;
+            flex-wrap: wrap;
+        }
+    }
+
+    @media (min-width: 1200px) {
+        padding-top: 3rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+}

@@ -1,3 +1,9 @@
 .car-detail-container {
     padding-top: 2rem;
+
+    .car-detail-actions {
+        display: flex;
+        justify-content: flex-end;
+        margin-bottom: 1rem;
+    }
 }

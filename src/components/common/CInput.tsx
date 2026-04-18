@@ -1,6 +1,6 @@
 import './Cinput.scss';
 
-type CInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type CInputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'value'> & {
     value?: string;
     label?: string;
     name?: string;

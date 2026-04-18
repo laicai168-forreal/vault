@@ -1,6 +1,7 @@
 export type UserProfile = {
     id?: string;
     username?: string;
+    role?: 'customer' | 'admin' | null;
     email?: string | null;
     phoneNumber?: string | null;
     bio?: string | null;
