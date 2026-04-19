@@ -4,10 +4,6 @@ const getApiBaseUrl = (envValue: string | undefined, fallback: string) =>
     trimTrailingSlash(envValue || fallback);
 
 export const apiConfig = {
-    carApiBaseUrl: getApiBaseUrl(
-        process.env.REACT_APP_CAR_API_BASE_URL,
-        'https://q83gsutz70.execute-api.us-east-1.amazonaws.com/prod'
-    ),
     collectionApiBaseUrl: getApiBaseUrl(
         process.env.REACT_APP_COLLECTION_API_BASE_URL,
         'https://29367920u8.execute-api.us-east-1.amazonaws.com'

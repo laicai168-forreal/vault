@@ -1,4 +1,11 @@
 export interface Car {
+    owners_count?: number,
+    owners_preview?: {
+        id: string,
+        username?: string | null,
+        profile_image_url?: string | null,
+        latest_owned_at?: string | null,
+    }[],
     product_url: string,
     source_url?: string,
     page_id: string,

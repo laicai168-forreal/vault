@@ -1,6 +1,7 @@
 .detail-card-container {
     display: flex;
-    border-radius: 12px;
+    border: 1px solid var(--color-primary-soft);
+    border-radius: 4px;
     overflow: hidden;
     background-color: #fff;
     margin: 0 1rem;
@@ -10,6 +11,8 @@
     .detail-car-action-section {
         display: flex;
         flex-direction: column;
+        justify-content: space-between;
+        gap: 1rem;
 
         .detail-car-delete-button {
             color: var(--gold);
@@ -22,6 +25,12 @@
         .detail-car-add-like-section {
             display: flex;
             flex-direction: row;
+        }
+
+        .detail-car-secondary-action {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: auto;
         }
     }
 

@@ -2,13 +2,6 @@ import axios, { InternalAxiosRequestConfig } from 'axios';
 import { apiConfig } from './config';
 import { getApiContext } from './apiContext';
 
-const api = axios.create({
-	baseURL: apiConfig.carApiBaseUrl,
-	headers: {
-		'Content-Type': 'application/json',
-	},
-});
-
 const adminApi = axios.create({
 	baseURL: apiConfig.userApiBaseUrl,
 	headers: {
@@ -67,6 +60,20 @@ export type CarChangeRequestSummary = {
 	resetAt: string | null;
 };
 
+export type CarOwner = {
+	id: string;
+	username?: string | null;
+	profile_image_url?: string | null;
+	latest_owned_at?: string | null;
+};
+
+export type CarOwnersResponse = {
+	items: CarOwner[];
+	total: number;
+	limit: number;
+	offset: number;
+};
+
 export type CarChangeRequestItem = {
 	id: string;
 	car_id?: string | null;
@@ -117,7 +124,7 @@ const getAuthHeaders = () => {
 		: {};
 };
 
-api.interceptors.request.use((config: InternalAxiosRequestConfig<ApiConfigData>) => {
+adminApi.interceptors.request.use((config: InternalAxiosRequestConfig<ApiConfigData>) => {
 	const { store } = require('../store/store');
 	const userId = store.getState().auth.authData?.userData?.sub;
 
@@ -151,12 +158,31 @@ export const fetchCars = async ({ limit, offset, bid, keyword, obrd }: GetCarPar
 	if (offset) params.offset = offset;
 	if (keyword) params.keyword = keyword;
 	if (obrd !== undefined) params.obrd = obrd;
-	const response = await api.get('/cars', { params });
+	const response = await adminApi.get('/cars', {
+		params,
+		headers: getAuthHeaders(),
+	});
 	return response.data;
 };
 
 export const fetchCarById = async (cid: string) => {
-	const response = await api.get('/cars', { params: { cid } });
+	const response = await adminApi.get('/cars', {
+		params: { cid },
+		headers: getAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const fetchCarOwners = async (cid: string, params?: { limit?: number; offset?: number }): Promise<CarOwnersResponse> => {
+	const response = await adminApi.get('/cars', {
+		params: {
+			cid,
+			ownersOnly: 1,
+			limit: params?.limit ?? 20,
+			offset: params?.offset ?? 0,
+		},
+		headers: getAuthHeaders(),
+	});
 	return response.data;
 };
 

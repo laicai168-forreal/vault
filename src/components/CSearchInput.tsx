@@ -4,12 +4,14 @@ import { FaSearch } from "react-icons/fa";
 
 type CSearchInputProps = {
     initialValue?: string;
+    placeholder?: string;
     onClick?: (searchText: string) => void;
 }
 
 const CSearchInput = ({
     initialValue,
     onClick,
+    placeholder = '',
 }: CSearchInputProps) => {
     const [searchText, setSearchText] = useState<string>('');
     const handleSearchTextChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -30,7 +32,13 @@ const CSearchInput = ({
     return (
         <div className="search-input-container">
             <form onSubmit={(e) => handleSubmit(e)}>
-                <input name="search-input-input" className="search-input-input" value={searchText} onChange={handleSearchTextChange} />
+                <input 
+                    name="search-input-input" 
+                    className="search-input-input" 
+                    value={searchText} 
+                    placeholder={placeholder}
+                    onChange={handleSearchTextChange} 
+                />
                 <button className="search-input-button" type="submit">
                     <FaSearch />
                 </button>

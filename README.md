@@ -57,17 +57,15 @@ This frontend currently talks to five backend surfaces:
 
 The sibling backend in [../LaicaiApi](/Users/zhuodiao/workplace/LaicaiApi) already has matching route groups:
 
-- `cars` REST API in `lib/contructs/lambdas/cars/CarsApiConstruct.ts`
+- authenticated cars and profile API in `lib/contructs/apis/UserFastApiConstruct.ts`
 - `collections` and `likes` HTTP API in `lib/contructs/apis/CollectionRoutes.ts`
 - crawler helper APIs in `lib/contructs/apis/CrawlerApiConstruct.ts`
 - additional data helper API in `lib/contructs/apis/AdditionalDataHelperApiConstruct.ts`
 - crawler log polling API in `lib/contructs/apis/CrawlerLoggingConstruct.ts`
-- authenticated user profile API under `/users/*` in `lib/contructs/apis/UserFastApiConstruct.ts`
 
 To point this frontend at your own backend deployment, set these variables in `.env`:
 
 ```env
-REACT_APP_CAR_API_BASE_URL=http://localhost:4000
 REACT_APP_COLLECTION_API_BASE_URL=http://localhost:4001
 REACT_APP_USER_API_BASE_URL=http://localhost:4001
 REACT_APP_CRAWLER_API_BASE_URL=http://localhost:4002
@@ -78,7 +76,6 @@ REACT_APP_LOG_API_BASE_URL=http://localhost:4004
 Notes:
 
 - `REACT_APP_COLLECTION_API_BASE_URL` must point to an API that accepts `Authorization: Bearer <cognito-access-token>`.
-- `REACT_APP_USER_API_BASE_URL` must point to a deployed backend that actually serves `/users` and uses the same Cognito user pool and app client as the frontend.
-- The current collection backend reads the user from JWT claims, while the car API currently accepts `userId` as a query/body value.
-- If you want a single local backend origin instead of multiple URLs, keep the same routes and set all five variables to the same base URL.
+- `REACT_APP_USER_API_BASE_URL` must point to a deployed backend that serves both `/users/*` and `/cars` and uses the same Cognito user pool and app client as the frontend.
+- If you want a single local backend origin instead of multiple URLs, keep the same routes and set the relevant variables to the same base URL.
 - If your local backend uses different paths or auth, update the API files under [src/api](/Users/zhuodiao/workplace/malo/src/api) to match.

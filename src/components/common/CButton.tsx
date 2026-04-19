@@ -2,7 +2,7 @@ import { ClipLoader } from 'react-spinners';
 import './CButton.scss'
 
 type CButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    theme?: 'mono' | 'icon-only' | 'warn';
+    theme?: 'mono' | 'outline-primary' | 'text-only' | 'icon-only' | 'warn';
     loading?: boolean;
 };
 
@@ -22,6 +22,8 @@ const CButton = ({
                 `default-button 
                 ${className || ''}
                 ${theme === 'mono' ? 'mono' : ''}
+                ${theme === 'outline-primary' ? 'outline-primary' : ''}
+                ${theme === 'text-only' ? 'text-only' : ''}
                 ${theme === 'icon-only' ? 'icon-only' : ''}
                 ${theme === 'warn' ? 'warn' : ''}`
             }

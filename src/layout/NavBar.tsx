@@ -77,7 +77,7 @@ export default function NavBar() {
 				{/* <Link to="/login" className="hover:text-blue-400">Login</Link> */}
 			</div>
 			<div className="nav-search">
-				<CSearchInput initialValue={keyword} onClick={(keyword) => handleSearchTextChange(keyword)} />
+				<CSearchInput initialValue={keyword} onClick={(keyword) => handleSearchTextChange(keyword)} placeholder='Search Cars...' />
 			</div>
 			<div className="nav-drop-down" ref={dropDownPanelRef}>
 				<button className="nav-option nav-button" onClick={() => setIsDropDownOpened(!isDropDownOpened)}>

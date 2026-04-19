@@ -22,6 +22,7 @@ type DetailCardProps = {
     release_date_ai?: string;
     loadingAdd?: boolean;
     loadingLike?: boolean;
+    onCorrectInfo?: () => void;
     onAddCollection?: (addCollectionEntry: CollectionEntry) => void;
     onLikeCollection?: (addCollectionEntry: CollectionEntry) => void;
 }
@@ -41,6 +42,7 @@ const DetailCard = ({
     release_date_ai,
     loadingAdd,
     loadingLike,
+    onCorrectInfo,
     onAddCollection,
     onLikeCollection,
 }: DetailCardProps) => {
@@ -114,11 +116,15 @@ const DetailCard = ({
                             {like ? <FaStore className="detail-car-dislike-button" fontSize='1.5rem' /> : <FaStore fontSize='1.5rem' />}
                         </CButton>
                     </div>
-                    {/* <div>
-                        <CButton className="detail-see-button" title="See buying options or whoever has this item">
-                            Owners/Sellers
+                    <div className="detail-car-secondary-action">
+                        <CButton
+                            theme="text-only"
+                            onClick={onCorrectInfo}
+                            title="Suggest a correction for this car"
+                        >
+                            Correct Info
                         </CButton>
-                    </div> */}
+                    </div>
                 </div>
 
             </div>

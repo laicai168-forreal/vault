@@ -19,6 +19,7 @@ import TWCrawlHelper from "../layout/pages/crawler/TWCrawlHelper";
 import InnoCrawlHelper from "../layout/pages/crawler/InnoCrawlHelper";
 import PopraceCrawlHelper from "../layout/pages/crawler/PopraceCrawlHelper";
 import CollectionDetail from "../layout/pages/user/CollectionDetail";
+import UserHomeStub from "../layout/pages/user/UserHomeStub";
 import AdminCars from "../layout/pages/admin/AdminCars";
 import AdminCarRequests from "../layout/pages/admin/AdminCarRequests";
 import AdminCarRequestReview from "../layout/pages/admin/AdminCarRequestReview";
@@ -47,6 +48,7 @@ const router = createBrowserRouter([
       { path: "account", element: <Account /> },
       { path: "collection_list", element: <CollectionsList /> },
       { path: "collection_detail", element: <CollectionDetail /> },
+      { path: "users/:userId", element: <UserHomeStub /> },
       { path: "crawlers", element: <Crawlers /> },
       { path: "crawlers/mini_gt", element: <MGTCrawlHelper /> },
       { path: "crawlers/tarmac", element: <TWCrawlHelper /> },

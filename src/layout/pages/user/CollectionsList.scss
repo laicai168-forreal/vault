@@ -1,8 +1,15 @@
+.collection-page-shell {
+    min-height: calc(100vh - 72px);
+    display: flex;
+    flex-direction: column;
+}
+
 .collection-container {
     padding: 20px;
     background-color: #efefef;
     display: flex;
     flex-direction: column;
+    flex: 1;
 
     .collection-container-title {
         font-weight: 700;
@@ -20,6 +27,10 @@
         padding: 1rem;
         background-color: #fff;
         border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        min-height: 0;
 
         .collection-table-top {
             display: flex;
@@ -31,6 +42,11 @@
             span {
                 flex-grow: 1;
             }
+        }
+
+        .collection-table-content {
+            flex: 1;
+            min-height: 0;
         }
 
         .collection-management-table {
@@ -83,6 +99,13 @@
                     }
                 }
             }
+        }
+
+        .collection-pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: auto;
+            padding-top: 1rem;
         }
     }
 

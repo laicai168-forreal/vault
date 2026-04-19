@@ -1,26 +1,34 @@
-import { Backdrop, CircularProgress } from "@mui/material";
-import { useCallback, useEffect, useRef } from "react";
+import { Backdrop, CircularProgress, Pagination } from "@mui/material";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSearchParams } from "react-router";
 import { useNavigate } from "react-router-dom";
+import { fetchCarOwners, CarOwner } from "../../api/carApi";
+import defaultAvatar from "../../assets/images/default-avatar.jpg";
 import CContainer from "../../components/common/CContainer";
 import DetailCard from "../../components/DetailCard";
-import CButton from "../../components/common/CButton";
 import { BRAND_NAME } from "../../constants/brand";
 import { getCarById, updateCurrentCar } from "../../store/cars/carsSlice";
 import { AppDispatch, RootState } from "../../store/store";
 import { addUserCollection, deleteUserCollection, dislikeUserCollection, likeUserCollection } from "../../store/userCollection/userCollectionSlice";
 import { CollectionEntry } from "../../types/UserCollection";
 import "./CarDetail.scss";
+import CButton from "../../components/common/CButton";
 
 
 
 const CarDetail = () => {
+    const OWNER_PAGE_LIMIT = 12;
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const { currentCar, loading } = useSelector((state: RootState) => state.cars);
     const cid = useRef<string>(searchParams.get('cid') || '');
+    const [isOwnersOpen, setIsOwnersOpen] = useState(false);
+    const [owners, setOwners] = useState<CarOwner[]>([]);
+    const [ownersLoading, setOwnersLoading] = useState(false);
+    const [ownersError, setOwnersError] = useState<string | null>(null);
+    const [ownersPage, setOwnersPage] = useState(1);
 
     const handleAddCollection = useCallback((entity: CollectionEntry) => {
         dispatch(updateCurrentCar({ loadingAdd: true }));
@@ -77,6 +85,31 @@ const CarDetail = () => {
         dispatch(getCarById(cid.current))
     }, [dispatch]);
 
+    useEffect(() => {
+        if (!isOwnersOpen || !cid.current) return;
+
+        setOwnersLoading(true);
+        setOwnersError(null);
+
+        fetchCarOwners(cid.current, {
+            limit: OWNER_PAGE_LIMIT,
+            offset: (ownersPage - 1) * OWNER_PAGE_LIMIT,
+        })
+            .then((response) => {
+                setOwners(response.items || []);
+            })
+            .catch((error: Error) => {
+                setOwnersError(error.message || "Unable to load owners.");
+            })
+            .finally(() => {
+                setOwnersLoading(false);
+            });
+    }, [isOwnersOpen, ownersPage]);
+
+    const ownerPreview = currentCar?.owners_preview || [];
+    const ownersCount = currentCar?.owners_count || 0;
+    const ownerPages = Math.max(1, Math.ceil(ownersCount / OWNER_PAGE_LIMIT));
+
     return (
         <CContainer className="car-detail-container">
             <Backdrop
@@ -91,37 +124,125 @@ const CarDetail = () => {
             {
                 currentCar &&
                 <>
-                    <div className="car-detail-actions">
-                        <CButton
-                            theme="mono"
-                            onClick={() => navigate(`/cars/edit?actor=customer&intent=suggest&cid=${currentCar.id}`)}
-                        >
-                            Correct Info
-                        </CButton>
+                    <div key={currentCar.id}>
+                        <DetailCard
+                            carId={currentCar.id}
+                            brand={BRAND_NAME[currentCar.brand]}
+                            title={currentCar.title}
+                            own={currentCar.own}
+                            like={currentCar.liked}
+                            images={currentCar.images}
+                            description={currentCar.description_ai}
+                            make={currentCar.make}
+                            make_ai={currentCar.make_ai}
+                            model_ai={currentCar.model_ai}
+                            release_date_approximate={currentCar.release_date_approximate}
+                            release_date_ai={currentCar.release_date_ai}
+                            loadingAdd={currentCar.loadingAdd}
+                            loadingLike={currentCar.loadingLike}
+                            onCorrectInfo={() => navigate(`/cars/edit?actor=customer&intent=suggest&cid=${currentCar.id}`)}
+                            onAddCollection={currentCar.own ? handleDeleteCollection : handleAddCollection}
+                            onLikeCollection={currentCar.liked ? handleDislikeCollection : handleLikeCollection}
+                        />
                     </div>
-                    {
 
-                        <div key={currentCar.id}>
-                            <DetailCard
-                                carId={currentCar.id}
-                                brand={BRAND_NAME[currentCar.brand]}
-                                title={currentCar.title}
-                                own={currentCar.own}
-                                like={currentCar.liked}
-                                images={currentCar.images}
-                                description={currentCar.description_ai}
-                                make={currentCar.make}
-                                make_ai={currentCar.make_ai}
-                                model_ai={currentCar.model_ai}
-                                release_date_approximate={currentCar.release_date_approximate}
-                                release_date_ai={currentCar.release_date_ai}
-                                loadingAdd={currentCar.loadingAdd}
-                                loadingLike={currentCar.loadingLike}
-                                onAddCollection={currentCar.own ? handleDeleteCollection : handleAddCollection}
-                                onLikeCollection={currentCar.liked ? handleDislikeCollection : handleLikeCollection}
-                            />
+                    <section className="car-detail-owners-section">
+                        <div className="car-detail-owners-header">
+                            <div>
+                                <h3>Collectors</h3>
+                                <p>
+                                    {ownersCount > 0
+                                        ? `${ownersCount} user${ownersCount === 1 ? '' : 's'} currently own this model.`
+                                        : 'No owners have added this model yet.'}
+                                </p>
+                            </div>
+                            {ownersCount > 0 && (
+                                <CButton
+                                    theme="outline-primary"
+                                    onClick={() => {
+                                        setIsOwnersOpen((current) => !current);
+                                        setOwnersPage(1);
+                                    }}
+                                >
+                                    {isOwnersOpen ? "Hide Owners" : "View Owners"}
+                                </CButton>
+                            )}
                         </div>
-                    }
+
+                        {ownersCount > 0 && (
+                            <button
+                                type="button"
+                                className="car-detail-owners-preview"
+                                onClick={() => setIsOwnersOpen((current) => !current)}
+                            >
+                                <div className="car-detail-owner-avatars">
+                                    {ownerPreview.slice(0, 5).map((owner) => (
+                                        <img
+                                            key={owner.id}
+                                            className="car-detail-owner-avatar"
+                                            src={owner.profile_image_url || defaultAvatar}
+                                            alt={owner.username ? `${owner.username} profile` : "Collector profile"}
+                                        />
+                                    ))}
+                                </div>
+                                <span className="car-detail-owners-preview-copy">
+                                    {ownersCount > 5 ? `See all ${ownersCount} owners` : "See owners"}
+                                </span>
+                            </button>
+                        )}
+
+                        {isOwnersOpen && ownersCount > 0 && (
+                            <div className="car-detail-owners-panel">
+                                {ownersLoading && (
+                                    <div className="car-detail-owners-state">
+                                        <CircularProgress size={22} />
+                                        <span>Loading owners...</span>
+                                    </div>
+                                )}
+
+                                {ownersError && <div className="car-detail-owners-error">{ownersError}</div>}
+
+                                {!ownersLoading && !ownersError && (
+                                    <>
+                                        <div className="car-detail-owners-list">
+                                            {owners.map((owner) => (
+                                                <button
+                                                    key={owner.id}
+                                                    type="button"
+                                                    className="car-detail-owner-row"
+                                                    onClick={() => navigate(`/users/${owner.id}`)}
+                                                >
+                                                    <img
+                                                        className="car-detail-owner-row-avatar"
+                                                        src={owner.profile_image_url || defaultAvatar}
+                                                        alt={owner.username ? `${owner.username} profile` : "Collector profile"}
+                                                    />
+                                                    <div className="car-detail-owner-row-copy">
+                                                        <strong>{owner.username || "Collector"}</strong>
+                                                        <span>
+                                                            {owner.latest_owned_at
+                                                                ? `Added ${new Date(owner.latest_owned_at).toLocaleDateString()}`
+                                                                : "Recently added"}
+                                                        </span>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {ownerPages > 1 && (
+                                            <Pagination
+                                                count={ownerPages}
+                                                page={ownersPage}
+                                                onChange={(_, page) => setOwnersPage(page)}
+                                                variant="outlined"
+                                                shape="rounded"
+                                            />
+                                        )}
+                                    </>
+                                )}
+                            </div>
+                        )}
+                    </section>
                 </>
             }
 

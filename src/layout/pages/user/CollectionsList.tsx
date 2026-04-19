@@ -157,7 +157,7 @@ const CollectionsList = () => {
     });
 
     return (
-        <div>
+        <div className="collection-page-shell">
             <CLoading loading={loading} />
             <Modal
                 sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
@@ -192,93 +192,97 @@ const CollectionsList = () => {
                             />
                         </form>
                     </div>
-                    <table className="collection-management-table">
-                        <thead>
-                            <tr>
-                                <td>ID</td>
-                                <td>Brand</td>
-                                <td>Item</td>
-                                <td></td>
-                                <td className="cell-clickable" onClick={handleAddedChange}>
-                                    <div className="cell-mutiple-item-row">
-                                        <span>Added</span>
-                                        {orderArrow(currentOrder(searchParams))}
-                                    </div>
-                                </td>
-                                <td>Amount</td>
-                                <td>Action</td>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                userCollectionsByPage[currentPage(searchParams)]?.map((collection) => (
-                                    <tr className="collection-management-row" key={collection.carId}>
-                                        <td className="collection-table-id">
-                                            {collection.originalId}
-                                        </td>
-                                        <td
-                                            className="cell-clickable"
-                                            onClick={() => handleViewBrand(collection.brand)}
-                                        >
-                                            <div className="collection-table-brand">
-                                                <img
-                                                    src={BRAND_LOGO[collection.brand]}
-                                                    className="collection-table-brand-image"
-                                                    width={40}
-                                                />
-                                                <div className="collection-table-brand-name">
-                                                    {BRAND_NAME[collection.brand]}
+                    <div className="collection-table-content">
+                        <table className="collection-management-table">
+                            <thead>
+                                <tr>
+                                    <td>ID</td>
+                                    <td>Brand</td>
+                                    <td>Item</td>
+                                    <td></td>
+                                    <td className="cell-clickable" onClick={handleAddedChange}>
+                                        <div className="cell-mutiple-item-row">
+                                            <span>Added</span>
+                                            {orderArrow(currentOrder(searchParams))}
+                                        </div>
+                                    </td>
+                                    <td>Amount</td>
+                                    <td>Action</td>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {
+                                    userCollectionsByPage[currentPage(searchParams)]?.map((collection) => (
+                                        <tr className="collection-management-row" key={collection.carId}>
+                                            <td className="collection-table-id">
+                                                {collection.originalId}
+                                            </td>
+                                            <td
+                                                className="cell-clickable"
+                                                onClick={() => handleViewBrand(collection.brand)}
+                                            >
+                                                <div className="collection-table-brand">
+                                                    <img
+                                                        src={BRAND_LOGO[collection.brand]}
+                                                        className="collection-table-brand-image"
+                                                        width={40}
+                                                    />
+                                                    <div className="collection-table-brand-name">
+                                                        {BRAND_NAME[collection.brand]}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td
-                                            className="cell-clickable"
-                                            onClick={() => handleViewCar(collection.carId)}
-                                        >
-                                            <img
-                                                className="collection-table-image"
-                                                src={getCarCfnUrlByS3Url(collection.images?.[0]?.s3_url, 200) ?? defaultImage}
-                                                width={60}
-                                                height={40}
-                                            />
-                                        </td>
-                                        <td
-                                            className="cell-clickable"
-                                            onClick={() => handleViewCar(collection.carId)}
-                                        >
-                                            {collection.title}
-                                        </td>
-                                        <td>
-                                            {dayjs(collection.addedAt).format("MMM D, YYYY")}
-                                        </td>
-                                        <td>
-                                            {collection.count}
-                                        </td>
-                                        <td>
-                                            <div className="collection-table-action">
-                                                <CButton onClick={() => handleCollectionClick(collection.carId)}>
-                                                    <FaEdit />
-                                                </CButton>
-                                                <CButton theme="warn" onClick={() => handleDeleteCollection(collection.carId)}>
-                                                    <FaRegTrashAlt />
-                                                </CButton>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            }
+                                            </td>
+                                            <td
+                                                className="cell-clickable"
+                                                onClick={() => handleViewCar(collection.carId)}
+                                            >
+                                                <img
+                                                    className="collection-table-image"
+                                                    src={getCarCfnUrlByS3Url(collection.images?.[0]?.s3_url, 200) ?? defaultImage}
+                                                    width={60}
+                                                    height={40}
+                                                />
+                                            </td>
+                                            <td
+                                                className="cell-clickable"
+                                                onClick={() => handleViewCar(collection.carId)}
+                                            >
+                                                {collection.title}
+                                            </td>
+                                            <td>
+                                                {dayjs(collection.addedAt).format("MMM D, YYYY")}
+                                            </td>
+                                            <td>
+                                                {collection.count}
+                                            </td>
+                                            <td>
+                                                <div className="collection-table-action">
+                                                    <CButton onClick={() => handleCollectionClick(collection.carId)}>
+                                                        <FaEdit />
+                                                    </CButton>
+                                                    <CButton theme="warn" onClick={() => handleDeleteCollection(collection.carId)}>
+                                                        <FaRegTrashAlt />
+                                                    </CButton>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))
+                                }
 
-                        </tbody>
-                    </table>
+                            </tbody>
+                        </table>
+                    </div>
                     {
                         !loading &&
-                        <Pagination
-                            count={totalCollectionPageCount}
-                            page={currentPage(searchParams)}
-                            onChange={(event, page) => handlePageChange(event, page)}
-                            variant="outlined"
-                            shape="rounded"
-                        />
+                        <div className="collection-pagination">
+                            <Pagination
+                                count={totalCollectionPageCount}
+                                page={currentPage(searchParams)}
+                                onChange={(event, page) => handlePageChange(event, page)}
+                                variant="outlined"
+                                shape="rounded"
+                            />
+                        </div>
                     }
 
                 </div>
