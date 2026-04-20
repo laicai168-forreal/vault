@@ -1,0 +1,57 @@
+.general-error-page {
+    min-height: calc(100vh - 84px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+    position: relative;
+}
+
+.general-error-toast {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 30;
+    padding: 0.85rem 1rem;
+    border: 1px solid var(--color-primary-soft);
+    border-radius: 4px;
+    background: #fffceb;
+    color: var(--color-primary);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.general-error-card {
+    width: min(560px, 100%);
+    padding: 2rem;
+    border: 1px solid var(--color-primary-soft);
+    border-radius: 4px;
+    background: #fff;
+}
+
+.general-error-copy {
+    h1 {
+        margin: 0 0 0.75rem;
+        color: var(--color-primary);
+    }
+
+    p {
+        margin: 0;
+        color: #555;
+    }
+}
+
+.general-error-eyebrow {
+    margin-bottom: 0.5rem !important;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #777 !important;
+}
+
+.general-error-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}

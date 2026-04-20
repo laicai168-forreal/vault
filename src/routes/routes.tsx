@@ -24,11 +24,13 @@ import AdminCars from "../layout/pages/admin/AdminCars";
 import AdminCarRequests from "../layout/pages/admin/AdminCarRequests";
 import AdminCarRequestReview from "../layout/pages/admin/AdminCarRequestReview";
 import CarChangeRequests from "../layout/pages/user/CarChangeRequests";
+import GeneralError from "../layout/pages/GeneralError";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <ProtectedLayout />,
+    errorElement: <GeneralError />,
     children: [
       { index: true, element: <Home /> },
       { path: "login", element: <Login /> },
