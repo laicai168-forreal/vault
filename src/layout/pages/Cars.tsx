@@ -4,11 +4,12 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-import { Backdrop, CircularProgress, Pagination } from '@mui/material';
+import { Pagination } from '@mui/material';
 
 import defaultImage from '../../assets/images/default_item_image.jpg';
 import CFilterDropdown, { CFilterDropdownOption } from '../../components/CFilterDropdown';
 import SearchItem from '../../components/SearchItem';
+import SearchItemSkeleton from '../../components/SearchItemSkeleton';
 import { BRAND_NAME, PRODUCT_LINE } from '../../constants/brand';
 import { getCars, resetCarList, setCurrentPage, updateSingleCar } from '../../store/cars/carsSlice';
 import { AppDispatch, RootState } from '../../store/store';
@@ -202,12 +203,6 @@ export default function Cars() {
 
 	return (
 		<div className='car-grid-container'>
-			<Backdrop
-				sx={(theme) => ({ color: '#fff', zIndex: theme.zIndex.drawer + 1 })}
-				open={loading}
-			>
-				<CircularProgress color="inherit" />
-			</Backdrop>
 			<div className='car-filter'>
 				<div className='car-filter-section'>
 					<div className='car-filter-section-label'>Filters</div>
@@ -239,6 +234,12 @@ export default function Cars() {
 			</div>
 
 			<div className='car-grid'>
+				{loading && !carsByPage[page] &&
+					Array.from({ length: 12 }).map((_, index) => (
+						<div key={`skeleton-${index}`} className='car-card'>
+							<SearchItemSkeleton />
+						</div>
+					))}
 				{
 					carsByPage[page] &&
 					carsByPage[page].map((car) => (
@@ -266,13 +267,10 @@ export default function Cars() {
 					))}
 			</div>
 			{
-				loading && <div>Loading Cars...</div>
-			}
-			{
 				error && <div>Error: {error}</div>
 			}
 			{
-				!loading && !carsByPage[page] && "No items available ..."
+				!loading && !carsByPage[page]?.length && "No items available ..."
 			}
 			{
 				!loading &&

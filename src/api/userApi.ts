@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { apiConfig } from './config';
-import { getApiContext } from './apiContext';
+import { getBearerAuthHeaders } from './authHeaders';
 import {
     CreateProfileImageUploadPayload,
     ProfileImageUploadResponse,
@@ -8,22 +8,22 @@ import {
     UserProfile
 } from '../types/User';
 
+export type AdminUserListItem = {
+    id?: string;
+    username?: string | null;
+    email?: string | null;
+    cognitoSub?: string | null;
+    role?: 'customer' | 'admin' | null;
+    profileImageUrl?: string | null;
+    createdAt?: string | null;
+};
+
 const api = axios.create({
     baseURL: apiConfig.userApiBaseUrl,
     headers: {
         'Content-Type': 'application/json',
     },
 });
-
-const getAuthHeaders = (accessToken?: string) => {
-    const token = accessToken || getApiContext()?.getIdToken();
-
-    return token
-        ? {
-            Authorization: `Bearer ${token}`,
-        }
-        : {};
-};
 
 const normalizeUserProfile = (data: any): UserProfile => ({
     id: data?.id,
@@ -38,9 +38,19 @@ const normalizeUserProfile = (data: any): UserProfile => ({
     profileImageUrl: data?.profile_image_url ?? data?.profileImageUrl ?? null,
 });
 
+const normalizeAdminUserListItem = (data: any): AdminUserListItem => ({
+    id: data?.id,
+    username: data?.username ?? null,
+    email: data?.email ?? null,
+    cognitoSub: data?.cognito_sub ?? data?.cognitoSub ?? null,
+    role: data?.role ?? 'customer',
+    profileImageUrl: data?.profile_image_url ?? data?.profileImageUrl ?? null,
+    createdAt: data?.created_at ?? data?.createdAt ?? null,
+});
+
 export const createCurrentUser = async (idToken?: string) => {
     const response = await api.post('/users', undefined, {
-        headers: getAuthHeaders(idToken),
+        headers: getBearerAuthHeaders(idToken),
     });
 
     return response.data;
@@ -48,7 +58,7 @@ export const createCurrentUser = async (idToken?: string) => {
 
 export const getCurrentUserProfile = async (idToken?: string): Promise<UserProfile> => {
     const response = await api.get('/users/me', {
-        headers: getAuthHeaders(idToken),
+        headers: getBearerAuthHeaders(idToken),
     });
 
     return normalizeUserProfile(response.data);
@@ -59,7 +69,7 @@ export const updateCurrentUserProfile = async (
     idToken?: string
 ): Promise<UserProfile> => {
     await api.post('/users/me', payload, {
-        headers: getAuthHeaders(idToken),
+        headers: getBearerAuthHeaders(idToken),
     });
 
     return getCurrentUserProfile(idToken);
@@ -70,8 +80,49 @@ export const createProfileImageUpload = async (
     idToken?: string
 ): Promise<ProfileImageUploadResponse> => {
     const response = await api.post('/users/profile-image/upload', payload, {
-        headers: getAuthHeaders(idToken),
+        headers: getBearerAuthHeaders(idToken),
     });
 
     return response.data;
+};
+
+export const promoteUserRole = async (
+    payload: { cognitoSub: string; role: 'customer' | 'admin' },
+    idToken?: string
+): Promise<{ message: string; role: 'customer' | 'admin' }> => {
+    const response = await api.post('/users/admin/promote', payload, {
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return response.data;
+};
+
+export const deleteAdminUser = async (
+    userId: string,
+    idToken?: string
+): Promise<{ message: string }> => {
+    // Admin-only hard delete used from the user-roles page. The backend may
+    // reject deletes that are blocked by required foreign-key references.
+    const response = await api.delete(`/users/admin/${userId}`, {
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return response.data;
+};
+
+export const listAdminUsers = async (
+    params?: { keyword?: string; limit?: number; offset?: number },
+    idToken?: string
+): Promise<{ items: AdminUserListItem[]; total: number; limit: number; offset: number }> => {
+    const response = await api.get('/users/admin/list', {
+        params,
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return {
+        items: (response.data?.items || []).map(normalizeAdminUserListItem),
+        total: response.data?.total || 0,
+        limit: response.data?.limit || params?.limit || 50,
+        offset: response.data?.offset || params?.offset || 0,
+    };
 };

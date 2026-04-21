@@ -18,7 +18,6 @@ export const store = configureStore({
 });
 
 initApi({
-  getAccessToken: () => store.getState().auth.authData?.accessToken as unknown as string | undefined,
   getIdToken: () => store.getState().auth.authData?.idToken as unknown as string | undefined,
 });
 

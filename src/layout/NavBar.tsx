@@ -155,6 +155,16 @@ export default function NavBar() {
 									</li>
 									<li>
 										{
+											isAuthenticated && isAdmin &&
+											<button
+												className="drop-down-button"
+												onClick={() => handleDropDownButtonClick(() => navigate('/admin/users'))}>
+												User Roles
+											</button>
+										}
+									</li>
+									<li>
+										{
 											isAuthenticated &&
 											<button
 												className="drop-down-button"

@@ -1,6 +1,6 @@
 import axios, { InternalAxiosRequestConfig } from 'axios';
 import { apiConfig } from './config';
-import { getApiContext } from './apiContext';
+import { getBearerAuthHeaders } from './authHeaders';
 
 const adminApi = axios.create({
 	baseURL: apiConfig.userApiBaseUrl,
@@ -114,16 +114,6 @@ export type AdminCarFormOptions = {
 	productLines: CarFormLookupOption[];
 };
 
-const getAuthHeaders = () => {
-	const token = getApiContext()?.getIdToken();
-
-	return token
-		? {
-			Authorization: `Bearer ${token}`,
-		}
-		: {};
-};
-
 adminApi.interceptors.request.use((config: InternalAxiosRequestConfig<ApiConfigData>) => {
 	const { store } = require('../store/store');
 	const userId = store.getState().auth.authData?.userData?.sub;
@@ -160,7 +150,7 @@ export const fetchCars = async ({ limit, offset, bid, keyword, obrd }: GetCarPar
 	if (obrd !== undefined) params.obrd = obrd;
 	const response = await adminApi.get('/cars', {
 		params,
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -168,7 +158,7 @@ export const fetchCars = async ({ limit, offset, bid, keyword, obrd }: GetCarPar
 export const fetchCarById = async (cid: string) => {
 	const response = await adminApi.get('/cars', {
 		params: { cid },
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -181,7 +171,7 @@ export const fetchCarOwners = async (cid: string, params?: { limit?: number; off
 			limit: params?.limit ?? 20,
 			offset: params?.offset ?? 0,
 		},
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -189,7 +179,7 @@ export const fetchCarOwners = async (cid: string, params?: { limit?: number; off
 // Admin-only direct create. This calls the user/admin API because writes are gated by role.
 export const createAdminCar = async (payload: AdminCarPayload) => {
 	const response = await adminApi.post('/admin/cars', payload, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -197,7 +187,7 @@ export const createAdminCar = async (payload: AdminCarPayload) => {
 // Admin-only direct update for an existing car row.
 export const updateAdminCar = async (carId: string, payload: AdminCarPayload) => {
 	const response = await adminApi.post(`/admin/cars/${carId}`, payload, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -205,7 +195,7 @@ export const updateAdminCar = async (carId: string, payload: AdminCarPayload) =>
 // Admin-only hard delete for maintenance workflows.
 export const deleteAdminCar = async (carId: string) => {
 	const response = await adminApi.delete(`/admin/cars/${carId}`, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -213,7 +203,7 @@ export const deleteAdminCar = async (carId: string) => {
 // Admin-only duplicate endpoint. The backend clones the source car, then applies overrides from payload.
 export const duplicateAdminCar = async (carId: string, payload: AdminCarPayload) => {
 	const response = await adminApi.post(`/admin/cars/${carId}/duplicate`, payload, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -221,7 +211,7 @@ export const duplicateAdminCar = async (carId: string, payload: AdminCarPayload)
 // Customer-facing suggestion submit. This creates a pending request for admin review.
 export const submitCarChangeRequest = async (payload: CarChangeRequestPayload) => {
 	const response = await adminApi.post('/car-change-requests', payload, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -229,7 +219,7 @@ export const submitCarChangeRequest = async (payload: CarChangeRequestPayload) =
 // Customer-facing quota summary used to show remaining weekly chances in the editor.
 export const fetchCarChangeRequestSummary = async (): Promise<CarChangeRequestSummary> => {
 	const response = await adminApi.get('/car-change-requests/summary', {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -238,7 +228,7 @@ export const fetchCarChangeRequestSummary = async (): Promise<CarChangeRequestSu
 // `productLines` includes `brand_id` so the editor can filter options by selected brand.
 export const fetchAdminCarFormOptions = async (): Promise<AdminCarFormOptions> => {
 	const response = await adminApi.get('/admin/car-form-options', {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -250,7 +240,7 @@ export const fetchAdminCarChangeRequests = async (params?: {
 }): Promise<CarChangeRequestItem[]> => {
 	// Admin queue listing used by the maintenance/review surface.
 	const response = await adminApi.get('/admin/car-change-requests', {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 		params,
 	});
 	return response.data;
@@ -259,7 +249,7 @@ export const fetchAdminCarChangeRequests = async (params?: {
 export const fetchAdminCarChangeRequestDetail = async (requestId: string): Promise<CarChangeRequestDetail> => {
 	// Includes both the request row and the latest linked car for side-by-side review.
 	const response = await adminApi.get(`/admin/car-change-requests/${requestId}`, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -270,7 +260,7 @@ export const reviewAdminCarChangeRequest = async (
 ): Promise<{ request: CarChangeRequestItem; car?: Record<string, unknown> | null }> => {
 	// Admin review can either reject, or approve with a refined final payload.
 	const response = await adminApi.post(`/admin/car-change-requests/${requestId}/review`, payload, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -282,7 +272,7 @@ export const fetchMyCarChangeRequests = async (params?: {
 }): Promise<CarChangeRequestItem[]> => {
 	// Customer history list for "My Suggestions".
 	const response = await adminApi.get('/car-change-requests', {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 		params,
 	});
 	return response.data;
@@ -291,7 +281,7 @@ export const fetchMyCarChangeRequests = async (params?: {
 export const fetchMyCarChangeRequestDetail = async (requestId: string): Promise<CarChangeRequestDetail> => {
 	// Rehydrates a pending request back into the customer editor for updates.
 	const response = await adminApi.get(`/car-change-requests/${requestId}`, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };
@@ -302,7 +292,7 @@ export const updateMyCarChangeRequest = async (
 ): Promise<CarChangeRequestDetail> => {
 	// Partial update so the editor can revise just the pending request fields it owns.
 	const response = await adminApi.post(`/car-change-requests/${requestId}`, payload, {
-		headers: getAuthHeaders(),
+		headers: getBearerAuthHeaders(),
 	});
 	return response.data;
 };

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import "./CImage.scss";
+import "./CSkeleton.scss";
 
 type Props = React.ImgHTMLAttributes<HTMLImageElement> & {
     src: string;
@@ -63,7 +64,7 @@ export default function CImage({
         <div
             className={`c-image-wrapper ${className}`}
         >
-            {loading && <div className="c-image-loading-overlay" />}
+            {loading && <div className="c-image-loading-overlay c-skeleton" />}
             <img
                 src={imgSrc ?? defaultImage}
                 alt={alt}

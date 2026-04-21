@@ -93,6 +93,9 @@ const AdminCars = () => {
                     </p>
                 </div>
                 <div className="admin-cars-header-actions">
+                    <CButton theme="outline-primary" onClick={() => navigate("/admin/users")}>
+                        User Roles
+                    </CButton>
                     <CButton theme="mono" onClick={() => navigate("/admin/car-requests")}>
                         Review Suggestions
                     </CButton>

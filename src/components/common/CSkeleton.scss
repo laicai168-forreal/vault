@@ -1,0 +1,38 @@
+.c-skeleton {
+    position: relative;
+    overflow: hidden;
+    background: #e2e2e2;
+    border-radius: 4px;
+
+    &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        transform: translateX(-100%);
+        background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.58) 50%,
+            rgba(255, 255, 255, 0) 100%
+        );
+        animation: c-skeleton-shimmer 1.8s ease-in-out infinite;
+    }
+}
+
+.c-skeleton-text {
+    height: 0.9rem;
+}
+
+.c-skeleton-rect {
+    height: 100%;
+}
+
+.c-skeleton-circle {
+    border-radius: 999px;
+}
+
+@keyframes c-skeleton-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}

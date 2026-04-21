@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { CollectionEntry, GetUserCollectionByCarParams, GetUserCollectionParams, UserCollectionParams } from '../types/UserCollection';
-import { getApiContext } from './apiContext';
+import { getBearerAuthHeaders } from './authHeaders';
 import { apiConfig } from './config';
 
 const api = axios.create({
@@ -11,11 +11,11 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-    const accessToken = getApiContext()?.getAccessToken();
+    const authHeaders = getBearerAuthHeaders();
 
-    if (accessToken) {
+    if (authHeaders.Authorization) {
         config.headers = config.headers ?? {};
-        config.headers.Authorization = `Bearer ${accessToken}`;
+        config.headers.Authorization = authHeaders.Authorization;
     }
 
     return config;

@@ -1,0 +1,201 @@
+.admin-user-roles-page {
+    padding: 2rem;
+    color: var(--color-font-main);
+
+    .admin-user-roles-header,
+    .admin-user-roles-card,
+    .admin-user-roles-alert,
+    .admin-user-roles-help {
+        background: #fff;
+        border: 1px solid var(--color-primary-soft);
+        border-radius: 4px;
+    }
+
+    .admin-user-roles-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 1rem;
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+
+        h1 {
+            margin: 0 0 0.5rem;
+        }
+
+        p {
+            margin: 0;
+            max-width: 44rem;
+            line-height: 1.5;
+        }
+    }
+
+    .admin-user-roles-header-actions {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .admin-user-roles-card {
+        padding: 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-user-roles-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(20rem, 1fr);
+        gap: 1rem;
+    }
+
+    .admin-user-roles-browser,
+    .admin-user-roles-form-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .admin-user-roles-form {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1rem;
+        align-items: end;
+    }
+
+    .admin-user-roles-field {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .admin-user-roles-label {
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .admin-user-roles-select {
+        height: 2.6rem;
+        padding: 0 0.85rem;
+        border: 1px solid var(--color-primary-soft);
+        border-radius: 4px;
+        background: #fff;
+        color: var(--color-font-main);
+        font: inherit;
+    }
+
+    .admin-user-roles-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .admin-user-roles-inline-note {
+        font-size: 0.88rem;
+        color: #666;
+    }
+
+    .admin-user-roles-user-list {
+        border: 1px solid var(--color-primary-soft);
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fff;
+    }
+
+    .admin-user-roles-user-row {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.9rem 1rem;
+        border: 0;
+        border-bottom: 1px solid #ececec;
+        background: transparent;
+        text-align: left;
+        cursor: pointer;
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .admin-user-roles-user-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+
+        strong {
+            color: var(--color-font-main);
+        }
+
+        span {
+            font-size: 0.88rem;
+            color: #666;
+            word-break: break-all;
+        }
+    }
+
+    .admin-user-roles-role-pill {
+        flex-shrink: 0;
+        padding: 0.28rem 0.55rem;
+        border: 1px solid var(--color-primary-soft);
+        border-radius: 999px;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+    }
+
+    .admin-user-roles-role-pill.admin {
+        background: #fff9cf;
+    }
+
+    .admin-user-roles-role-pill.customer {
+        background: #f4f4f4;
+    }
+
+    .admin-user-roles-user-empty {
+        padding: 1rem;
+        color: #666;
+    }
+
+    .admin-user-roles-alert {
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
+    }
+
+    .admin-user-roles-alert.error {
+        color: #9d2222;
+        background: #fff1f1;
+    }
+
+    .admin-user-roles-alert.info {
+        color: #245f2f;
+        background: #f3fff4;
+    }
+
+    .admin-user-roles-help {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+        color: #666;
+    }
+
+    .admin-user-roles-link {
+        color: inherit;
+    }
+
+    @media (max-width: 900px) {
+        .admin-user-roles-header,
+        .admin-user-roles-help {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .admin-user-roles-layout,
+        .admin-user-roles-form {
+            grid-template-columns: 1fr;
+        }
+    }
+}

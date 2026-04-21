@@ -1,5 +1,6 @@
 type ApiContext = {
-    getAccessToken: () => string | undefined;
+    // The app standardizes on the ID token for authenticated API calls because
+    // the current backend reads user identity claims from that JWT.
     getIdToken: () => string | undefined;
 };
 

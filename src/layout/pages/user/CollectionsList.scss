@@ -99,6 +99,14 @@
                     }
                 }
             }
+
+            .collection-management-row-skeleton {
+                pointer-events: none;
+
+                td {
+                    vertical-align: middle;
+                }
+            }
         }
 
         .collection-pagination {
@@ -109,6 +117,42 @@
         }
     }
 
+}
+
+.collection-skeleton-id {
+    width: 4.5rem;
+}
+
+.collection-skeleton-brand-logo {
+    width: 40px;
+    height: 40px;
+}
+
+.collection-skeleton-brand-name {
+    width: 5.5rem;
+}
+
+.collection-skeleton-image {
+    width: 60px;
+    height: 40px;
+}
+
+.collection-skeleton-title {
+    width: 90%;
+}
+
+.collection-skeleton-date {
+    width: 6rem;
+}
+
+.collection-skeleton-count {
+    width: 2rem;
+}
+
+.collection-skeleton-action {
+    width: 1.9rem;
+    height: 1.9rem;
+    border-radius: 2px;
 }
 
 .cell-clickable {

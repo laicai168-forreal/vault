@@ -23,6 +23,7 @@ import UserHomeStub from "../layout/pages/user/UserHomeStub";
 import AdminCars from "../layout/pages/admin/AdminCars";
 import AdminCarRequests from "../layout/pages/admin/AdminCarRequests";
 import AdminCarRequestReview from "../layout/pages/admin/AdminCarRequestReview";
+import AdminUserRoles from "../layout/pages/admin/AdminUserRoles";
 import CarChangeRequests from "../layout/pages/user/CarChangeRequests";
 import GeneralError from "../layout/pages/GeneralError";
 
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
       { path: "cars/edit", element: <CarEditor /> },
       { path: "cars/requests", element: <CarChangeRequests /> },
       { path: "admin/cars", element: <AdminCars /> },
+      { path: "admin/users", element: <AdminUserRoles /> },
       { path: "admin/car-requests", element: <AdminCarRequests /> },
       { path: "admin/car-requests/review", element: <AdminCarRequestReview /> },
       { path: "car_detail", element: <CarDetail /> },

@@ -1,4 +1,4 @@
-import { Backdrop, CircularProgress, Modal, Pagination } from "@mui/material";
+import { Modal, Pagination } from "@mui/material";
 import dayjs from "dayjs";
 import { FormEvent, useEffect, useState } from "react";
 import { FaEdit, FaRegTrashAlt, FaSearch, FaLongArrowAltDown, FaLongArrowAltUp } from "react-icons/fa";
@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { createSearchParams, useNavigate, useSearchParams } from "react-router";
 import defaultImage from '../../../assets/images/default_item_image.jpg';
 import CButton from "../../../components/common/CButton";
-import CImage from "../../../components/common/CImage";
+import CSkeleton from "../../../components/common/CSkeleton";
 import { AppDispatch, RootState } from "../../../store/store";
 import { deleteUserCollection, deleteUserCollectionEntry, getUserCollection, getUserCollectionByCarId, getUserCollectionMetaData, updateUserCollection } from "../../../store/userCollection/userCollectionSlice";
 import { getCarCfnUrlByS3Url } from "../../../utils/carsUtil";
@@ -211,6 +211,28 @@ const CollectionsList = () => {
                                 </tr>
                             </thead>
                             <tbody>
+                                {loading && !userCollectionsByPage[currentPage(searchParams)]?.length &&
+                                    Array.from({ length: 6 }).map((_, index) => (
+                                        <tr className="collection-management-row collection-management-row-skeleton" key={`collection-skeleton-${index}`}>
+                                            <td><CSkeleton variant="text" className="collection-skeleton-id" /></td>
+                                            <td>
+                                                <div className="collection-table-brand">
+                                                    <CSkeleton className="collection-skeleton-brand-logo" />
+                                                    <CSkeleton variant="text" className="collection-skeleton-brand-name" />
+                                                </div>
+                                            </td>
+                                            <td><CSkeleton className="collection-skeleton-image" /></td>
+                                            <td><CSkeleton variant="text" className="collection-skeleton-title" /></td>
+                                            <td><CSkeleton variant="text" className="collection-skeleton-date" /></td>
+                                            <td><CSkeleton variant="text" className="collection-skeleton-count" /></td>
+                                            <td>
+                                                <div className="collection-table-action">
+                                                    <CSkeleton className="collection-skeleton-action" />
+                                                    <CSkeleton className="collection-skeleton-action" />
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 {
                                     userCollectionsByPage[currentPage(searchParams)]?.map((collection) => (
                                         <tr className="collection-management-row" key={collection.carId}>
