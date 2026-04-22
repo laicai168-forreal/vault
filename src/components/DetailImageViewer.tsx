@@ -4,6 +4,7 @@ import { ImageObj } from "../types/Images";
 import { Modal } from "@mui/material";
 import defaultImage from "../assets/images/default_item_image.jpg";
 import { getCarCfnUrlByS3Url } from "../utils/carsUtil";
+import CImage from "./common/CImage";
 
 
 type DetailImageViewerProps = {
@@ -30,14 +31,24 @@ const DetailImageViewer = ({
                             className={`detail-image-viewer-option ${selectedIndex === index && 'selected'}`}
                             onClick={() => handleChooseImage(index)}
                         >
-                            <img src={getCarCfnUrlByS3Url(image.s3_url, 300)} />
+                            <CImage
+                                src={getCarCfnUrlByS3Url(image.s3_url, 300) || ""}
+                                defaultImage={defaultImage}
+                                alt={`Car thumbnail ${index + 1}`}
+                                objectFit="contain"
+                            />
                         </div>
                     ))
                 }
             </div>
             <div className="detail-image-viewer-main">
                 <div className="detail-image-viewer-main-image-container" onClick={handleOpen}>
-                    <img src={getCarCfnUrlByS3Url(images?.[selectedIndex]?.s3_url) || defaultImage} />
+                    <CImage
+                        src={getCarCfnUrlByS3Url(images?.[selectedIndex]?.s3_url) || ""}
+                        defaultImage={defaultImage}
+                        alt={`Car image ${selectedIndex + 1}`}
+                        objectFit="contain"
+                    />
                 </div>
             </div>
             <Modal
@@ -45,7 +56,12 @@ const DetailImageViewer = ({
                 onClose={handleClose}
             >
                 <div className="detail-image-viewer-modal">
-                    <img src={getCarCfnUrlByS3Url(images?.[selectedIndex]?.s3_url) || defaultImage} />
+                    <CImage
+                        src={getCarCfnUrlByS3Url(images?.[selectedIndex]?.s3_url) || ""}
+                        defaultImage={defaultImage}
+                        alt={`Car image ${selectedIndex + 1}`}
+                        objectFit="contain"
+                    />
                 </div>
             </Modal>
         </div>

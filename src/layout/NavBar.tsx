@@ -123,12 +123,22 @@ export default function NavBar() {
 									}
 
 								</li>
-									<li>
-										{
-											isAuthenticated &&
-											<button
-												className="drop-down-button"
-												onClick={() => handleDropDownButtonClick(() => navigate('/account'))}>
+								<li>
+									{
+										isAuthenticated && currentUser?.id &&
+										<button
+											className="drop-down-button"
+											onClick={() => handleDropDownButtonClick(() => navigate(`/users/${currentUser?.id}`))}>
+											My Home Page
+										</button>
+									}
+								</li>
+								<li>
+									{
+										isAuthenticated &&
+										<button
+											className="drop-down-button"
+											onClick={() => handleDropDownButtonClick(() => navigate('/account'))}>
 												My Profile
 											</button>
 										}

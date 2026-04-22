@@ -101,6 +101,31 @@ const normalizePayloadToForm = (payload?: Record<string, any> | null): ReviewFor
     limited_pieces: payload?.limited_pieces ? String(payload?.limited_pieces) : "",
 });
 
+const CASE_INSENSITIVE_FIELDS: Array<keyof ReviewForm> = ["brand", "make", "product_line"];
+
+const normalizeCompareValue = (field: keyof ReviewForm, value: unknown) => {
+    const normalized = String(value ?? "").trim();
+    if (CASE_INSENSITIVE_FIELDS.includes(field)) {
+        return normalized.toLowerCase();
+    }
+    return normalized;
+};
+
+const alignCaseOnlySuggestionFields = (currentForm: ReviewForm, suggestedForm: ReviewForm): ReviewForm => {
+    const next = { ...suggestedForm };
+
+    CASE_INSENSITIVE_FIELDS.forEach((field) => {
+        if (
+            normalizeCompareValue(field, currentForm[field]) === normalizeCompareValue(field, suggestedForm[field])
+            && String(currentForm[field] || "").trim() !== ""
+        ) {
+            next[field] = currentForm[field] as never;
+        }
+    });
+
+    return next;
+};
+
 const AdminCarRequestReview = () => {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -131,7 +156,10 @@ const AdminCarRequestReview = () => {
                 setDetail(loadedDetail);
                 setFormOptions(options);
                 const currentForm = normalizeCarToForm(loadedDetail.currentCar);
-                const suggestedForm = normalizePayloadToForm(loadedDetail.request.payload);
+                const suggestedForm = alignCaseOnlySuggestionFields(
+                    currentForm,
+                    normalizePayloadToForm(loadedDetail.request.payload),
+                );
                 setForm({ ...currentForm, ...suggestedForm });
                 setReviewNotes(loadedDetail.request.review_notes || "");
             })
@@ -142,7 +170,13 @@ const AdminCarRequestReview = () => {
     }, [isAdmin, requestId]);
 
     const currentValues = useMemo(() => normalizeCarToForm(detail?.currentCar), [detail]);
-    const suggestedValues = useMemo(() => normalizePayloadToForm(detail?.request.payload), [detail]);
+    const suggestedValues = useMemo(
+        () => alignCaseOnlySuggestionFields(
+            normalizeCarToForm(detail?.currentCar),
+            normalizePayloadToForm(detail?.request.payload),
+        ),
+        [detail],
+    );
 
     const resolvedBrandId = useMemo(() => {
         if (form.brand_id) return form.brand_id;
@@ -235,8 +269,8 @@ const AdminCarRequestReview = () => {
     ];
 
     const isFieldChanged = (field: keyof ReviewForm) => {
-        const currentValue = String(currentValues[field] ?? "").trim();
-        const suggestedValue = String(suggestedValues[field] ?? "").trim();
+        const currentValue = normalizeCompareValue(field, currentValues[field]);
+        const suggestedValue = normalizeCompareValue(field, suggestedValues[field]);
         return currentValue !== suggestedValue;
     };
 
@@ -345,6 +379,28 @@ const AdminCarRequestReview = () => {
 
                         <section className="admin-car-request-review-section">
                             <h2>Final Applied Values</h2>
+                            {!!detail.request.uploaded_images?.length && (
+                                <div className="admin-car-request-uploaded-images">
+                                    <h3>Uploaded Images</h3>
+                                    <div className="admin-car-request-uploaded-grid">
+                                        {detail.request.uploaded_images.map((image: any, index: number) => (
+                                            <div className="admin-car-request-uploaded-card" key={`${image.file_url || image.file_name}-${index}`}>
+                                                <img
+                                                    src={image.file_url || ""}
+                                                    alt={image.file_name || `Uploaded suggestion ${index + 1}`}
+                                                />
+                                                <div className="admin-car-request-uploaded-copy">
+                                                    <strong>{image.file_name || `Upload ${index + 1}`}</strong>
+                                                    <span>{image.content_type || "image"}</span>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="admin-car-request-uploaded-note">
+                                        Approving this request will attach these uploaded images to the car record automatically.
+                                    </p>
+                                </div>
+                            )}
                             <div className="admin-car-request-form-grid">
                                 <CInput label="Code" value={form.code} onChange={handleTextChange("code")} placeholder="Internal code" />
                                 <CInput label="Title" value={form.title} onChange={handleTextChange("title")} placeholder="Display title" />

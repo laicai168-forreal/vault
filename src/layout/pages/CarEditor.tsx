@@ -9,6 +9,7 @@ import { CircularProgress } from "@mui/material";
 import {
     AdminCarFormOptions,
     CarChangeRequestDetail,
+    createCarChangeRequestImageUpload,
     createAdminCar,
     deleteAdminCar,
     duplicateAdminCar,
@@ -285,7 +286,7 @@ const CarEditor = () => {
         ? "Admin submissions save directly to the car record. Duplicate and delete actions are available here for data maintenance."
         : requestId
             ? "You can update a pending suggestion here before it is reviewed by an admin."
-            : "Customer submissions create a pending review item for admin approval. Image upload storage can be added next once we decide where the files should land.";
+            : "Customer submissions create a pending review item for admin approval. Uploaded images are stored and included in the admin review.";
 
     const primaryButtonLabel = actor === "admin"
         ? (intent === "create" || intent === "duplicate" ? "Create Entry" : "Save Changes")
@@ -315,6 +316,10 @@ const CarEditor = () => {
             if (!selected) return prev;
             return [selected, ...next];
         });
+    };
+
+    const handleRemoveImage = (index: number) => {
+        setExistingImages((prev) => prev.filter((_, currentIndex) => currentIndex !== index));
     };
 
     const handleLookupInputChange = (field: "brand" | "make" | "product_line", value: string) => {
@@ -370,7 +375,9 @@ const CarEditor = () => {
         is_chase: form.is_chase,
         is_limited: form.is_limited,
         limited_pieces: form.is_limited && form.limited_pieces ? Number(form.limited_pieces) : null,
-        images: existingImages.length > 0 ? existingImages : undefined,
+        // Admin image edits should be able to clear the gallery entirely, so
+        // an empty list must still be sent instead of being omitted.
+        images: existingImages,
     });
 
     const buildCustomerPayload = () => {
@@ -385,12 +392,37 @@ const CarEditor = () => {
             primary_image: existingImages[0] || null,
             selected_image_names: selectedFiles.map((file) => file.name),
         },
-        uploaded_images: selectedFiles.map((file) => ({
-            file_name: file.name,
-            content_type: file.type,
-            size: file.size,
-        })),
+        uploaded_images: requestDetail?.request.uploaded_images || [],
         };
+    };
+
+    const uploadCustomerImages = async () => {
+        if (selectedFiles.length === 0) return [];
+
+        return Promise.all(
+            selectedFiles.map(async (file) => {
+                const upload = await createCarChangeRequestImageUpload({
+                    fileName: file.name,
+                    contentType: file.type || "application/octet-stream",
+                });
+
+                await fetch(upload.uploadUrl, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": file.type || "application/octet-stream",
+                    },
+                    body: file,
+                });
+
+                return {
+                    file_name: file.name,
+                    content_type: file.type,
+                    size: file.size,
+                    object_key: upload.objectKey,
+                    file_url: upload.fileUrl,
+                };
+            })
+        );
     };
 
     const handleSubmit = async () => {
@@ -418,12 +450,20 @@ const CarEditor = () => {
                     navigate(`/cars/edit?actor=admin&intent=edit&cid=${response.id}`);
                 }
             } else {
+                const uploadedImages = await uploadCustomerImages();
+                const customerPayload = {
+                    ...buildCustomerPayload(),
+                    uploaded_images: [
+                        ...((requestDetail?.request.uploaded_images as Array<Record<string, unknown>>) || []),
+                        ...uploadedImages,
+                    ],
+                };
                 if (requestId) {
-                    await updateMyCarChangeRequest(requestId, buildCustomerPayload());
+                    await updateMyCarChangeRequest(requestId, customerPayload);
                     navigate("/cars/requests");
                     return;
                 } else {
-                    await submitCarChangeRequest(buildCustomerPayload());
+                    await submitCarChangeRequest(customerPayload);
                     setSubmitSuccess("Suggestion submitted for admin review.");
                     setRemainingCount((current) => current === null ? current : Math.max(current - 1, 0));
                     navigate("/cars/requests");
@@ -572,13 +612,23 @@ const CarEditor = () => {
                                                     <strong>{index === 0 ? "Primary" : `Image ${index + 1}`}</strong>
                                                     <span>{image.original_url || image.s3_url || "No image source"}</span>
                                                 </div>
-                                                <CButton
-                                                    theme="mono"
-                                                    onClick={() => handlePromoteImage(index)}
-                                                    disabled={index === 0}
-                                                >
-                                                    {index === 0 ? "Primary" : "Make Primary"}
-                                                </CButton>
+                                                <div className="car-editor-image-card-actions">
+                                                    <CButton
+                                                        theme="mono"
+                                                        onClick={() => handlePromoteImage(index)}
+                                                        disabled={index === 0}
+                                                    >
+                                                        {index === 0 ? "Primary" : "Make Primary"}
+                                                    </CButton>
+                                                    {actor === "admin" && (
+                                                        <CButton
+                                                            theme="text-only"
+                                                            onClick={() => handleRemoveImage(index)}
+                                                        >
+                                                            Remove
+                                                        </CButton>
+                                                    )}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -743,7 +793,7 @@ const CarEditor = () => {
                                         ? `${selectedFiles.length} file(s) selected`
                                         : actor === "admin"
                                             ? "Reference image upload is still local-only for now."
-                                            : "Customer uploads are currently submitted as file metadata until we add storage + signed upload support."}
+                                            : "Customer uploads are stored and sent with the review request."}
                                 </p>
                             </div>
                         </section>

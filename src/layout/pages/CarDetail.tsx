@@ -128,6 +128,7 @@ const CarDetail = () => {
                         <DetailCard
                             carId={currentCar.id}
                             brand={BRAND_NAME[currentCar.brand]}
+                            brandKey={currentCar.brand}
                             title={currentCar.title}
                             own={currentCar.own}
                             like={currentCar.liked}
@@ -136,6 +137,7 @@ const CarDetail = () => {
                             make={currentCar.make}
                             make_ai={currentCar.make_ai}
                             model_ai={currentCar.model_ai}
+                            product_line={currentCar.product_line}
                             release_date_approximate={currentCar.release_date_approximate}
                             release_date_ai={currentCar.release_date_ai}
                             loadingAdd={currentCar.loadingAdd}

@@ -215,6 +215,59 @@
         margin-bottom: 1rem;
     }
 
+    .admin-car-request-uploaded-images {
+        margin-bottom: 1rem;
+
+        h3 {
+            margin: 0 0 0.75rem;
+        }
+    }
+
+    .admin-car-request-uploaded-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+        gap: 0.75rem;
+        margin-bottom: 0.75rem;
+    }
+
+    .admin-car-request-uploaded-card {
+        border: 1px solid #d6d6d6;
+        border-radius: 4px;
+        overflow: hidden;
+        background: #fafafa;
+
+        img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            display: block;
+            background: #f1f1f1;
+        }
+    }
+
+    .admin-car-request-uploaded-copy {
+        padding: 0.65rem 0.75rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+
+        strong,
+        span {
+            overflow-wrap: anywhere;
+        }
+
+        span {
+            font-size: 0.82rem;
+            color: #666;
+        }
+    }
+
+    .admin-car-request-uploaded-note {
+        margin: 0;
+        color: #666;
+        line-height: 1.5;
+    }
+
     .admin-car-request-check-group {
         display: flex;
         align-items: center;

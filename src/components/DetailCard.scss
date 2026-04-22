@@ -7,12 +7,86 @@
     margin: 0 1rem;
     padding: 1.5rem;
     min-height: 500px;
+    gap: 1.5rem;
+
+    .detail-car-image-section,
+    .detail-car-main-section {
+        min-width: 0;
+    }
+
+    .detail-car-main-section {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 1.25rem;
+
+        h2 {
+            margin: 0;
+        }
+
+        p {
+            margin: 0;
+            line-height: 1.55;
+        }
+    }
+
+    .detail-car-specs-section {
+        flex: 1 1 auto;
+        display: flex;
+        align-items: flex-start;
+    }
+
+    .detail-car-specs-grid {
+        width: 100%;
+        overflow-x: auto;
+        padding: 0.9rem 1rem;
+        background: #fafafa;
+        border-radius: 4px;
+        color: var(--color-primary);
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 0.6rem 0;
+            vertical-align: top;
+            border-bottom: 1px solid #ececec;
+            font-size: 0.88rem;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        td:first-child {
+            width: 10rem;
+            color: var(--color-primary);
+            font-weight: 500;
+            padding-right: 1rem;
+        }
+    }
+
+    .detail-car-brand-row {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+    }
+
+    .detail-car-brand-logo {
+        width: 1.6rem;
+        height: 1.6rem;
+        object-fit: contain;
+        flex: 0 0 auto;
+    }
 
     .detail-car-action-section {
         display: flex;
         flex-direction: column;
-        justify-content: space-between;
+        justify-content: flex-end;
         gap: 1rem;
+        margin-top: auto;
 
         .detail-car-delete-button {
             color: var(--gold);
@@ -25,12 +99,18 @@
         .detail-car-add-like-section {
             display: flex;
             flex-direction: row;
+            flex-wrap: wrap;
+            gap: 0.4rem;
         }
 
         .detail-car-secondary-action {
             display: flex;
             justify-content: flex-end;
             margin-top: auto;
+        }
+
+        .detail-car-correct-info-button {
+            font-weight: 400;
         }
     }
 
@@ -43,12 +123,17 @@
 
     @media (min-width: 0) {
         flex-direction: column;
+
+        .detail-car-image-section,
+        .detail-car-main-section {
+            width: 100%;
+        }
     }
 
     @media (min-width: 600px) {
         .detail-car-image-section {
-            margin-right: 1rem;
             width: 50%;
+            max-height: min(70vh, 48rem);
         }
 
         .detail-car-main-section {
@@ -56,5 +141,6 @@
         }
 
         flex-direction: row;
+        align-items: stretch;
     }
 }

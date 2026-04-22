@@ -200,6 +200,13 @@
         }
     }
 
+    .car-editor-image-card-actions {
+        display: grid;
+        gap: 0.45rem;
+        justify-items: stretch;
+        align-self: center;
+    }
+
     .car-editor-image-card-copy {
         display: grid;
         gap: 0.3rem;

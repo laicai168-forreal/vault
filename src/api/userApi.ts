@@ -3,7 +3,10 @@ import { apiConfig } from './config';
 import { getBearerAuthHeaders } from './authHeaders';
 import {
     CreateProfileImageUploadPayload,
+    FollowStatus,
     ProfileImageUploadResponse,
+    PublicUserConnectionListResponse,
+    PublicUserProfileResponse,
     UpdateUserProfilePayload,
     UserProfile
 } from '../types/User';
@@ -125,4 +128,81 @@ export const listAdminUsers = async (
         limit: response.data?.limit || params?.limit || 50,
         offset: response.data?.offset || params?.offset || 0,
     };
+};
+
+export const getPublicUserProfile = async (
+    userId: string,
+    params?: { limit?: number; offset?: number }
+): Promise<PublicUserProfileResponse> => {
+    const response = await api.get(`/profiles/${userId}`, {
+        params,
+    });
+
+    return response.data;
+};
+
+export const getFollowStatus = async (
+    userId: string,
+    idToken?: string
+): Promise<FollowStatus> => {
+    const response = await api.get(`/users/follows/${userId}`, {
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return response.data;
+};
+
+export const followUser = async (
+    userId: string,
+    idToken?: string
+): Promise<FollowStatus> => {
+    const response = await api.post(`/users/follows/${userId}`, undefined, {
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return response.data;
+};
+
+export const unfollowUser = async (
+    userId: string,
+    idToken?: string
+): Promise<FollowStatus> => {
+    const response = await api.delete(`/users/follows/${userId}`, {
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return response.data;
+};
+
+export const getPublicFollowers = async (
+    userId: string,
+    params?: { limit?: number; offset?: number }
+): Promise<PublicUserConnectionListResponse> => {
+    const response = await api.get(`/profiles/${userId}/followers`, {
+        params,
+    });
+
+    return response.data;
+};
+
+export const getPublicFollowing = async (
+    userId: string,
+    params?: { limit?: number; offset?: number }
+): Promise<PublicUserConnectionListResponse> => {
+    const response = await api.get(`/profiles/${userId}/following`, {
+        params,
+    });
+
+    return response.data;
+};
+
+export const removeFollower = async (
+    userId: string,
+    idToken?: string
+): Promise<{ message: string }> => {
+    const response = await api.delete(`/users/followers/${userId}`, {
+        headers: getBearerAuthHeaders(idToken),
+    });
+
+    return response.data;
 };

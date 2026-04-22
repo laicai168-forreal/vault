@@ -51,6 +51,12 @@ export type CarChangeRequestPayload = {
 	uploaded_images?: Array<Record<string, unknown>>;
 };
 
+export type CarChangeRequestImageUploadResponse = {
+	uploadUrl: string;
+	objectKey: string;
+	fileUrl: string;
+};
+
 // Lightweight quota summary used by the customer editor banner and submit guard.
 export type CarChangeRequestSummary = {
 	weeklyLimit: number;
@@ -211,6 +217,15 @@ export const duplicateAdminCar = async (carId: string, payload: AdminCarPayload)
 // Customer-facing suggestion submit. This creates a pending request for admin review.
 export const submitCarChangeRequest = async (payload: CarChangeRequestPayload) => {
 	const response = await adminApi.post('/car-change-requests', payload, {
+		headers: getBearerAuthHeaders(),
+	});
+	return response.data;
+};
+
+export const createCarChangeRequestImageUpload = async (
+	payload: { fileName: string; contentType: string }
+): Promise<CarChangeRequestImageUploadResponse> => {
+	const response = await adminApi.post('/car-change-requests/images/upload', payload, {
 		headers: getBearerAuthHeaders(),
 	});
 	return response.data;

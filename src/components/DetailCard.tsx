@@ -6,10 +6,12 @@ import { FaStore } from "react-icons/fa6";
 import { BsBox2, BsBox2HeartFill } from "react-icons/bs";
 import { CollectionEntry } from "../types/UserCollection";
 import { getPrimaryWithAiFallback } from "../utils/carDisplay";
+import { BRAND_LOGO, BRAND_NAME, PRODUCT_LINE } from "../constants/brand";
 
 type DetailCardProps = {
     carId?: string;
     brand?: string;
+    brandKey?: string;
     title?: string;
     own?: boolean;
     like?: boolean;
@@ -18,6 +20,7 @@ type DetailCardProps = {
     make?: string;
     make_ai?: string;
     model_ai?: string;
+    product_line?: string;
     release_date_approximate?: string;
     release_date_ai?: string;
     loadingAdd?: boolean;
@@ -30,6 +33,7 @@ type DetailCardProps = {
 const DetailCard = ({
     carId,
     brand,
+    brandKey,
     title,
     own,
     like,
@@ -38,6 +42,7 @@ const DetailCard = ({
     make,
     make_ai,
     model_ai,
+    product_line,
     release_date_approximate,
     release_date_ai,
     loadingAdd,
@@ -48,6 +53,9 @@ const DetailCard = ({
 }: DetailCardProps) => {
     const makeDisplay = getPrimaryWithAiFallback(make, make_ai);
     const releaseDateDisplay = getPrimaryWithAiFallback(release_date_approximate, release_date_ai);
+    const brandLabel = BRAND_NAME[brandKey || ""] || brand || "-";
+    const brandLogo = BRAND_LOGO[brandKey || ""];
+    const productLineLabel = PRODUCT_LINE[product_line || ""] || product_line || "";
 
     return (
         <div className="detail-card-container">
@@ -60,13 +68,22 @@ const DetailCard = ({
                 <div className="detail-car-specs-section">
                     <div className="detail-car-specs-grid">
                         <table>
-                            <thead>
-                                <tr>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </thead>
                             <tbody>
+                                <tr>
+                                    <td>Brand</td>
+                                    <td>
+                                        <div className="detail-car-brand-row">
+                                            {brandLogo && <img className="detail-car-brand-logo" src={brandLogo} alt={`${brandLabel} logo`} />}
+                                            <span>{brandLabel}</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {productLineLabel && (
+                                    <tr>
+                                        <td>Product Line</td>
+                                        <td>{productLineLabel}</td>
+                                    </tr>
+                                )}
                                 <tr>
                                     <td>Make</td>
                                     <td>
@@ -119,6 +136,7 @@ const DetailCard = ({
                     <div className="detail-car-secondary-action">
                         <CButton
                             theme="text-only"
+                            className="detail-car-correct-info-button"
                             onClick={onCorrectInfo}
                             title="Suggest a correction for this car"
                         >
